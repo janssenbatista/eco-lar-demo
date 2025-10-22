@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Leaf, Sparkles } from "lucide-react";
@@ -20,6 +20,8 @@ export default function Intro() {
   const [step, setStep] = useState(0);
   const [ready, setReady] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const videoRef = useRef(null);
+  const [skippedToEnd, setSkippedToEnd] = useState(false);
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -32,13 +34,18 @@ export default function Intro() {
   }, [navigate]);
 
   useEffect(() => {
-    if (step < slides.length) {
+    if (!skippedToEnd && step < slides.length) {
       const timer = setTimeout(() => setStep((prev) => prev + 1), 3000);
       return () => clearTimeout(timer);
     }
-    const readyTimer = setTimeout(() => setReady(true), 1500);
-    return () => clearTimeout(readyTimer);
-  }, [step]);
+
+    // when skipped or finished, reveal CTA shortly
+    if (!ready) {
+      const readyTimer = setTimeout(() => setReady(true), 500);
+      return () => clearTimeout(readyTimer);
+    }
+    return undefined;
+  }, [step, skippedToEnd, ready]);
 
   const handleStart = async () => {
     setIsSaving(true);
@@ -46,18 +53,51 @@ export default function Intro() {
     navigate(createPageUrl("Onboarding"));
   };
 
+  const handleSkipToEnd = () => {
+    const video = videoRef.current;
+    setSkippedToEnd(true);
+    setStep(slides.length);
+    if (!video) {
+      setReady(true);
+      return;
+    }
+    try {
+      video.loop = false;
+      const endTime = video.duration && isFinite(video.duration) ? Math.max(0, video.duration - 0.3) : 0;
+      video.currentTime = endTime;
+      video.pause();
+    } catch (e) {
+      // just ignore
+    }
+    setReady(true);
+  };
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (skippedToEnd) return;
+      if (e.key === " " || e.key === "Spacebar" || e.key === "Enter") {
+        e.preventDefault();
+        handleSkipToEnd();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [skippedToEnd]);
+
   return (
     <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-black text-white">
       <video
-        className="absolute inset-0 h-full w-full object-cover opacity-40"
+        ref={videoRef}
+        onClick={handleSkipToEnd}
+        className="absolute inset-0 h-full w-full object-cover opacity-40 cursor-pointer"
         autoPlay
         muted
-        loop
+        loop={!skippedToEnd}
         playsInline
       >
         <source src="https://videos.pexels.com/video-files/3209828/3209828-hd_1920_1080_25fps.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
       <div className="relative z-10 flex flex-col items-center gap-8 px-4 text-center">
         <AnimatePresence mode="wait">
           <motion.h1

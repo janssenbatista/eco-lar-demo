@@ -34,7 +34,7 @@ export default function PersonalizedInsights({ user, stats }) {
         : {
             icon: Droplets,
             title: "Olho no banho",
-            message: `O consumo por pessoa está em ${waterPerPerson} L/dia. Reduza o tempo de banho e feche torneiras ao ensaboar louça.`,
+            message: `O consumo por pessoa está em ${waterPerPerson.toFixed(2)}L/dia. Reduza o tempo de banho e feche torneiras ao ensaboar louça.`,
             color: "#2563eb",
             background: "#dbeafe"
           }
