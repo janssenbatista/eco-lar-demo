@@ -1,14 +1,14 @@
 import clsx from "clsx";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useMemo, useState, useCallback } from "react";
 
 const SidebarContext = createContext(null);
 
 export function SidebarProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggle = () => setIsOpen((prev) => !prev);
-  const close = () => setIsOpen(false);
-  const value = { isOpen, toggle, close };
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
+  const close = useCallback(() => setIsOpen(false), []);
+  const value = useMemo(() => ({ isOpen, toggle, close }), [isOpen, toggle, close]);
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
 }
