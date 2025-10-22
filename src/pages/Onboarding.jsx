@@ -42,20 +42,22 @@ const recyclingOptions = [
   { value: "never", label: "Nunca", icon: "❌" }
 ];
 
+const initialFormState = {
+  full_name: "",
+  email: "",
+  household_size: "",
+  transportation_type: "",
+  has_solar_panels: false,
+  heating_type: "",
+  residence_size: "",
+  has_garden: false,
+  recycling_habit: ""
+};
+
 export default function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    full_name: "",
-    email: "",
-    household_size: "",
-    transportation_type: "",
-    has_solar_panels: false,
-    heating_type: "",
-    residence_size: "",
-    has_garden: false,
-    recycling_habit: ""
-  });
+  const [formData, setFormData] = useState(() => ({ ...initialFormState }));
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
@@ -80,17 +82,9 @@ export default function Onboarding() {
         }
 
         setUser(userData);
-        setFormData({
-          full_name: userData.full_name || "",
-          email: userData.email || "",
-          household_size: userData.household_size ? String(userData.household_size) : "",
-          transportation_type: userData.transportation_type || "",
-          has_solar_panels: Boolean(userData.has_solar_panels),
-          heating_type: userData.heating_type || "",
-          residence_size: userData.residence_size || "",
-          has_garden: Boolean(userData.has_garden),
-          recycling_habit: userData.recycling_habit || ""
-        });
+        if (!userData.onboarding_completed) {
+          setFormData({ ...initialFormState });
+        }
       } catch (error) {
         console.error("Erro ao verificar onboarding:", error);
       } finally {
