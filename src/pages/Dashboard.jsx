@@ -16,22 +16,25 @@ export default function Dashboard() {
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ["currentUser"],
-    queryFn: () => base44.auth.me()
+    queryFn: () => base44.auth.me(),
   });
 
   const { data: records = [], isLoading: recordsLoading } = useQuery({
     queryKey: ["consumptionRecords"],
     queryFn: () => base44.entities.ConsumptionRecord.list("-date"),
-    initialData: []
+    initialData: [],
   });
 
   const { data: goals = [], isLoading: goalsLoading } = useQuery({
     queryKey: ["goals"],
     queryFn: () => base44.entities.Goal.list("-deadline"),
-    initialData: []
+    initialData: [],
   });
 
   useEffect(() => {
+    if (!user) {
+      navigate(createPageUrl("Login"));
+    }
     if (!userLoading && user) {
       if (!user.has_seen_intro) {
         navigate(createPageUrl("Intro"));
@@ -56,7 +59,10 @@ export default function Dashboard() {
         .filter((record) => record.category === category)
         .reduce((sum, record) => sum + Number(record.value || 0), 0);
 
-    const totalCost = last30Days.reduce((sum, record) => sum + Number(record.cost || 0), 0);
+    const totalCost = last30Days.reduce(
+      (sum, record) => sum + Number(record.cost || 0),
+      0
+    );
     const householdSize = user.household_size || 1;
 
     return {
@@ -65,11 +71,16 @@ export default function Dashboard() {
       energy: sumByCategory("energy"),
       energyPerPerson: sumByCategory("energy") / householdSize,
       waste: sumByCategory("waste"),
-      cost: totalCost
+      cost: totalCost,
     };
   }, [records, user]);
 
-  if (userLoading || !user || !user.onboarding_completed || !user.has_seen_intro) {
+  if (
+    userLoading ||
+    !user ||
+    !user.onboarding_completed ||
+    !user.has_seen_intro
+  ) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
@@ -85,8 +96,9 @@ export default function Dashboard() {
             Olá, {user.full_name?.split(" ")[0] || "usuário"}! 👋
           </h1>
           <p className="mt-2 text-gray-600">
-            Casa com {user.household_size || 0} {user.household_size === 1 ? "pessoa" : "pessoas"} •
-            Acompanhe seu impacto ambiental
+            Casa com {user.household_size || 0}{" "}
+            {user.household_size === 1 ? "pessoa" : "pessoas"} • Acompanhe seu
+            impacto ambiental
           </p>
         </div>
 

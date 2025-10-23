@@ -11,23 +11,32 @@ import Profile from "@/pages/Profile";
 import Intro from "@/pages/Intro";
 import Onboarding from "@/pages/Onboarding";
 import { createPageUrl } from "@/utils";
+import Login from "./pages/Login";
 
 export default function App() {
-	return (
-		<Routes>
-			<Route path="/" element={<Navigate to={createPageUrl("Dashboard")} replace />} />
-			<Route path={createPageUrl("Intro")} element={<Intro />} />
-			<Route path={createPageUrl("Onboarding")} element={<Onboarding />} />
-			<Route element={<Layout />}>
-				<Route path={createPageUrl("Dashboard")} element={<Dashboard />} />
-				<Route path={createPageUrl("AddRecord")} element={<AddRecord />} />
-				<Route path={createPageUrl("Goals")} element={<Goals />} />
-				<Route path={createPageUrl("Tips")} element={<Tips />} />
-				<Route path={createPageUrl("Calculator")} element={<Calculator />} />
-				<Route path={createPageUrl("Game")} element={<Game />} />
-				<Route path={createPageUrl("Profile")} element={<Profile />} />
-			</Route>
-			<Route path="*" element={<Navigate to={createPageUrl("Dashboard")} replace />} />
-		</Routes>
-	);
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={<Navigate to={createPageUrl("Dashboard")} replace />}
+      />
+      <Route path={createPageUrl("Login")} element={<Login />} />
+
+      <Route path={createPageUrl("Intro")} element={<Intro />} />
+      <Route path={createPageUrl("Onboarding")} element={<Onboarding />} />
+      <Route element={<Layout />}>
+        <Route path={createPageUrl("Dashboard")} element={<Dashboard />} />
+        <Route path={createPageUrl("AddRecord")} element={<AddRecord />} />
+        <Route path={createPageUrl("Goals")} element={<Goals />} />
+        <Route path={createPageUrl("Tips")} element={<Tips />} />
+        <Route path={createPageUrl("Calculator")} element={<Calculator />} />
+        <Route path={createPageUrl("Game")} element={<Game />} />
+        <Route path={createPageUrl("Profile")} element={<Profile />} />
+      </Route>
+      <Route
+        path="*"
+        element={<Navigate to={createPageUrl("Dashboard")} replace />}
+      />
+    </Routes>
+  );
 }
