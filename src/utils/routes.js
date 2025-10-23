@@ -1,4 +1,5 @@
 export const PAGE_ROUTES = {
+	Login: { path: "/login", title: "Login" },
 	Dashboard: { path: "/dashboard", title: "Dashboard" },
 	AddRecord: { path: "/registros/novo", title: "Registrar Consumo" },
 	Goals: { path: "/metas", title: "Metas" },

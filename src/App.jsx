@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/layout/Layout";
+import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import AddRecord from "@/pages/AddRecord";
 import Goals from "@/pages/Goals";
@@ -15,8 +16,9 @@ import { createPageUrl } from "@/utils";
 export default function App() {
 	return (
 		<Routes>
-			<Route path="/" element={<Navigate to={createPageUrl("Dashboard")} replace />} />
+			<Route path="/" element={<Navigate to={createPageUrl("Intro")} replace />} />
 			<Route path={createPageUrl("Intro")} element={<Intro />} />
+			<Route path={createPageUrl("Login")} element={<Login />} />
 			<Route path={createPageUrl("Onboarding")} element={<Onboarding />} />
 			<Route element={<Layout />}>
 				<Route path={createPageUrl("Dashboard")} element={<Dashboard />} />
@@ -27,7 +29,7 @@ export default function App() {
 				<Route path={createPageUrl("Game")} element={<Game />} />
 				<Route path={createPageUrl("Profile")} element={<Profile />} />
 			</Route>
-			<Route path="*" element={<Navigate to={createPageUrl("Dashboard")} replace />} />
+			<Route path="*" element={<Navigate to={createPageUrl("Intro")} replace />} />
 		</Routes>
 	);
 }

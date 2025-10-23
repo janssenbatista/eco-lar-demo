@@ -33,9 +33,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!userLoading && user) {
-      if (!user.has_seen_intro) {
-        navigate(createPageUrl("Intro"));
-      } else if (!user.onboarding_completed) {
+      if (!user.onboarding_completed) {
         navigate(createPageUrl("Onboarding"));
       }
     }
@@ -69,7 +67,7 @@ export default function Dashboard() {
     };
   }, [records, user]);
 
-  if (userLoading || !user || !user.onboarding_completed || !user.has_seen_intro) {
+  if (userLoading || !user || !user.onboarding_completed) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />

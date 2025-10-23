@@ -71,22 +71,21 @@ export default function Onboarding() {
           return;
         }
 
-        if (!userData.has_seen_intro) {
-          navigate(createPageUrl("Intro"));
-          return;
-        }
-
+        // Se já completou onboarding, vai para Dashboard
         if (userData.onboarding_completed) {
           navigate(createPageUrl("Dashboard"));
           return;
         }
 
+        // Carrega o usuário e inicia com form vazio
         setUser(userData);
-        if (!userData.onboarding_completed) {
-          setFormData({ ...initialFormState });
-        }
+        setFormData({ ...initialFormState });
       } catch (error) {
+        // Se não conseguir buscar usuário, redireciona para Login
         console.error("Erro ao verificar onboarding:", error);
+        if (mounted) {
+          navigate(createPageUrl("Login"));
+        }
       } finally {
         if (mounted) {
           setLoadingUser(false);

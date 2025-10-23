@@ -198,6 +198,23 @@ export const base44 = {
     async me() {
       return withDelay(db.user, 150);
     },
+    async login(email, password) {
+      // Mock login - valida email e senha
+      // Para demo, aceita qualquer combinação de email/senha
+      if (!email || !password) {
+        throw new Error("Email e senha são obrigatórios");
+      }
+      db.user = { ...db.user, email };
+      persist();
+      return withDelay(db.user, 300);
+    },
+    async checkEmailExists(email) {
+      // Verifica se o email existe (simula um usuário pré-existente)
+      // Para demo, consideramos que apenas o email padrão existe
+      const defaultEmail = "ana.silva@example.com";
+      const exists = email.toLowerCase() === defaultEmail.toLowerCase() || email === db.user.email;
+      return withDelay(exists, 400);
+    },
     async updateMe(updates) {
       db.user = { ...db.user, ...updates };
       persist();

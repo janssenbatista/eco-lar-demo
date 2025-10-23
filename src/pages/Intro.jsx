@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Leaf, Sparkles } from "lucide-react";
-import { base44 } from "@/api/mockClient";
+import { Sparkles } from "lucide-react";
 import { createPageUrl } from "@/utils";
-import { Button } from "@/components/ui/Button";
+
+// LocalStorage key para rastrear se a animação foi assistida
+const INTRO_WATCHED_KEY = "ecolar_intro_watched";
 
 const slides = [
   "Nosso planeta está em um ponto de virada.",
@@ -17,88 +18,72 @@ const slides = [
 
 export default function Intro() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
-  const [ready, setReady] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const videoRef = useRef(null);
-  const [skippedToEnd, setSkippedToEnd] = useState(false);
+  const [showHint, setShowHint] = useState(false);
+  const [step, setStep] = useState(0);
 
+  // Check se a intro já foi assistida - se sim, vai direto para login
   useEffect(() => {
-    const checkStatus = async () => {
-      const user = await base44.auth.me();
-      if (user.has_seen_intro) {
-        navigate(user.onboarding_completed ? createPageUrl("Dashboard") : createPageUrl("Onboarding"));
-      }
-    };
-    checkStatus();
+    const introWatched = localStorage.getItem(INTRO_WATCHED_KEY);
+    if (introWatched === "true") {
+      navigate(createPageUrl("Login"));
+    }
   }, [navigate]);
 
+  // Handle quando o video termina
+  const handleVideoEnd = () => {
+    // Não fazer nada - deixar as frases continuarem
+  };
+
+  // Handle click no video
+  const handleVideoClick = () => {
+    localStorage.setItem(INTRO_WATCHED_KEY, "true");
+    navigate(createPageUrl("Login"));
+  };
+
+  // Show hint após 5 segundos de video
   useEffect(() => {
-    if (!skippedToEnd && step < slides.length) {
+    const hintTimer = setTimeout(() => setShowHint(true), 5000);
+    return () => clearTimeout(hintTimer);
+  }, []);
+
+  // Auto-avançar as frases a cada 3 segundos
+  useEffect(() => {
+    if (step < slides.length) {
       const timer = setTimeout(() => setStep((prev) => prev + 1), 3000);
       return () => clearTimeout(timer);
+    } else if (step === slides.length) {
+      // Quando todas as frases passaram, mostra "Vamos começar sua jornada" por mais tempo
+      const timer = setTimeout(() => {
+        localStorage.setItem(INTRO_WATCHED_KEY, "true");
+        navigate(createPageUrl("Login"));
+      }, 4000); // Aguarda 4s antes de navegar (tempo suficiente para ver a frase final)
+      return () => clearTimeout(timer);
     }
-
-    // when skipped or finished, reveal CTA shortly
-    if (!ready) {
-      const readyTimer = setTimeout(() => setReady(true), 500);
-      return () => clearTimeout(readyTimer);
-    }
-    return undefined;
-  }, [step, skippedToEnd, ready]);
-
-  const handleStart = async () => {
-    setIsSaving(true);
-    await base44.auth.updateMe({ has_seen_intro: true });
-    navigate(createPageUrl("Onboarding"));
-  };
-
-  const handleSkipToEnd = () => {
-    const video = videoRef.current;
-    setSkippedToEnd(true);
-    setStep(slides.length);
-    if (!video) {
-      setReady(true);
-      return;
-    }
-    try {
-      video.loop = false;
-      const endTime = video.duration && isFinite(video.duration) ? Math.max(0, video.duration - 0.3) : 0;
-      video.currentTime = endTime;
-      video.pause();
-    } catch (e) {
-      // just ignore
-    }
-    setReady(true);
-  };
-
-  useEffect(() => {
-    const onKey = (e) => {
-      if (skippedToEnd) return;
-      if (e.key === " " || e.key === "Spacebar" || e.key === "Enter") {
-        e.preventDefault();
-        handleSkipToEnd();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [skippedToEnd]);
+  }, [step, navigate]);
 
   return (
-    <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-black text-white">
+    <div 
+      className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-black text-white cursor-pointer"
+      onClick={handleVideoClick}
+    >
+      {/* Video de fundo */}
       <video
         ref={videoRef}
-        onClick={handleSkipToEnd}
-        className="absolute inset-0 h-full w-full object-cover opacity-40 cursor-pointer"
+        onEnded={handleVideoEnd}
+        className="absolute inset-0 h-full w-full object-cover"
         autoPlay
         muted
-        loop={!skippedToEnd}
+        loop
         playsInline
       >
         <source src="https://videos.pexels.com/video-files/3209828/3209828-hd_1920_1080_25fps.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
-      <div className="relative z-10 flex flex-col items-center gap-8 px-4 text-center">
+
+      <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+
+      {/* Frases do slide */}
+      <div className="relative z-10 flex flex-col items-center gap-8 px-4 text-center pointer-events-none">
         <AnimatePresence mode="wait">
           <motion.h1
             key={step}
@@ -111,33 +96,22 @@ export default function Intro() {
             {slides[step] || "Vamos começar sua jornada."}
           </motion.h1>
         </AnimatePresence>
-
-        {ready && (
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }}>
-            <Button
-              onClick={handleStart}
-              disabled={isSaving}
-              className="h-16 rounded-full px-12 text-lg font-semibold"
-            >
-              {isSaving ? (
-                "Carregando..."
-              ) : (
-                <span className="flex items-center gap-3">
-                  <Leaf className="h-6 w-6" /> Quero fazer a diferença
-                </span>
-              )}
-            </Button>
-          </motion.div>
-        )}
-
-        {ready && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
-            <p className="flex items-center gap-2 text-emerald-200">
-              <Sparkles className="h-4 w-4" /> Clique para iniciar sua jornada sustentável
-            </p>
-          </motion.div>
-        )}
       </div>
+
+      {/* Hint para clicar */}
+      {showHint && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center gap-3 px-4 text-center pointer-events-none"
+        >
+          <p className="flex items-center gap-2 text-emerald-200 text-lg">
+            <Sparkles className="h-5 w-5 animate-pulse" /> Clique em qualquer lugar para continuar
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 }
+
