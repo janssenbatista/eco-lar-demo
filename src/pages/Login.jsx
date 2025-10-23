@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Leaf, Mail, Lock, ArrowRight } from "lucide-react";
-import { base44 } from "@/api/mockClient";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Card } from "@/components/ui/Card";
+import createBrowserClient from "@/api/client";
+
+const supabase = createBrowserClient();
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,12 +23,30 @@ export default function Login() {
 
   // Check if already logged in
   useEffect(() => {
+    setCheckingAuth(true);
     const checkAuth = async () => {
       try {
-        const user = await base44.auth.me();
-        if (user?.has_seen_intro) {
-          navigate(user.onboarding_completed ? createPageUrl("Dashboard") : createPageUrl("Onboarding"));
+        const { data } = await supabase.auth.getUser();
+        const user = data?.user ?? null;
+
+        if (user) {
+          const { data: userInfos, error: infoError } = await supabase
+            .from("tb_user_infos")
+            .select("has_seen_intro, onboarding_completed")
+            .eq("user_id", user.id)
+            .single();
+
+          if (userInfos) {
+            navigate(
+              userInfos.onboarding_completed
+                ? createPageUrl("Dashboard")
+                : createPageUrl("Onboarding")
+            );
+          } else {
+            setCheckingAuth(false);
+          }
         } else {
+          // No user: stop checking and render the login form
           setCheckingAuth(false);
         }
       } catch (e) {
@@ -36,7 +56,6 @@ export default function Login() {
     checkAuth();
   }, [navigate]);
 
-  // Verificar se email existe quando muda
   const handleEmailChange = (value) => {
     setEmail(value);
     setError("");
@@ -55,7 +74,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
+
     if (!email.trim()) {
       setError("Por favor, insira um email válido");
       return;
@@ -66,7 +85,6 @@ export default function Login() {
       return;
     }
 
-    // Validações específicas para cadastro
     if (activeTab === "signup") {
       if (!confirmPassword.trim()) {
         setError("Por favor, confirme sua senha");
@@ -85,12 +103,35 @@ export default function Login() {
     }
 
     setIsLoading(true);
+
     try {
-      const user = await base44.auth.login(email.trim(), password);
-      if (user) {
-        navigate(user.onboarding_completed ? createPageUrl("Dashboard") : createPageUrl("Onboarding"));
+      if (activeTab === "signup") {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (!error) {
+          const { data } = await supabase
+            .from("tb_user_infos")
+            .select("onboarding_completed");
+          navigate(
+            data ? createPageUrl("Dashboard") : createPageUrl("Onboarding")
+          );
+        } else {
+          setError("Erro ao criar conta. Tente novamente.");
+        }
       } else {
-        setError("Email ou senha inválidos. Tente novamente.");
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (!error) {
+          const { data } = await supabase
+            .from("tb_user_infos")
+            .select("onboarding_completed");
+          navigate(
+            data ? createPageUrl("Dashboard") : createPageUrl("Onboarding")
+          );
+        } else {
+          setError("Email ou senha inválidos. Tente novamente.");
+        }
       }
     } catch (err) {
       setError("Erro ao fazer login. Tente novamente.");
@@ -118,7 +159,10 @@ export default function Login() {
         loop
         playsInline
       >
-        <source src="https://videos.pexels.com/video-files/3209828/3209828-hd_1920_1080_25fps.mp4" type="video/mp4" />
+        <source
+          src="https://videos.pexels.com/video-files/3209828/3209828-hd_1920_1080_25fps.mp4"
+          type="video/mp4"
+        />
       </video>
 
       <motion.div
@@ -128,7 +172,7 @@ export default function Login() {
         className="relative z-10 w-full max-w-md"
       >
         <Card className="border-0 bg-white/95 backdrop-blur shadow-2xl">
-          <div className="flex flex-col items-center gap-6 p-8">
+          <div className="flex flex-col items-center gap-4 p-8">
             {/* Logo */}
             <motion.div
               animate={{ rotate: [0, -5, 5, -5, 0] }}
@@ -189,10 +233,12 @@ export default function Login() {
               {/* Form Title */}
               <div className="text-center pb-2">
                 <h2 className="text-lg font-semibold text-gray-800">
-                  {activeTab === "login" ? "Bem-vindo de volta!" : "Comece sua jornada"}
+                  {activeTab === "login"
+                    ? "Bem-vindo de volta!"
+                    : "Comece sua jornada"}
                 </h2>
                 <p className="text-sm text-gray-500">
-                  {activeTab === "login" 
+                  {activeTab === "login"
                     ? "Faça login para continuar"
                     : "Crie uma nova conta para começar"}
                 </p>
@@ -219,7 +265,10 @@ export default function Login() {
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 font-semibold">
+                <Label
+                  htmlFor="password"
+                  className="text-gray-700 font-semibold"
+                >
                   Senha
                 </Label>
                 <div className="relative">
@@ -239,7 +288,10 @@ export default function Login() {
               {/* Confirm Password Field - Only for Signup */}
               {activeTab === "signup" && (
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-gray-700 font-semibold">
+                  <Label
+                    htmlFor="confirmPassword"
+                    className="text-gray-700 font-semibold"
+                  >
                     Confirmar Senha
                   </Label>
                   <div className="relative">
@@ -249,21 +301,34 @@ export default function Login() {
                       type="password"
                       placeholder="••••••••"
                       value={confirmPassword}
-                      onChange={(e) => handleConfirmPasswordChange(e.target.value)}
+                      onChange={(e) =>
+                        handleConfirmPasswordChange(e.target.value)
+                      }
                       disabled={isLoading}
                       className={`border-gray-200 bg-gray-50 pl-10 placeholder-gray-400 focus:border-emerald-500 focus:bg-white ${
-                        password && confirmPassword && password !== confirmPassword
+                        password &&
+                        confirmPassword &&
+                        password !== confirmPassword
                           ? "border-red-500 bg-red-50"
                           : ""
                       }`}
                     />
                   </div>
-                  {password && confirmPassword && password !== confirmPassword && (
-                    <p className="text-xs text-red-600 font-medium">As senhas não correspondem</p>
-                  )}
-                  {password && confirmPassword && password === confirmPassword && password.length >= 6 && (
-                    <p className="text-xs text-green-600 font-medium">✓ Senhas correspondem</p>
-                  )}
+                  {password &&
+                    confirmPassword &&
+                    password !== confirmPassword && (
+                      <p className="text-xs text-red-600 font-medium">
+                        As senhas não correspondem
+                      </p>
+                    )}
+                  {password &&
+                    confirmPassword &&
+                    password === confirmPassword &&
+                    password.length >= 6 && (
+                      <p className="text-xs text-green-600 font-medium">
+                        ✓ Senhas correspondem
+                      </p>
+                    )}
                 </div>
               )}
 
@@ -282,10 +347,11 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={
-                  isLoading || 
-                  !email.trim() || 
+                  isLoading ||
+                  !email.trim() ||
                   !password.trim() ||
-                  (activeTab === "signup" && (!confirmPassword.trim() || password !== confirmPassword))
+                  (activeTab === "signup" &&
+                    (!confirmPassword.trim() || password !== confirmPassword))
                 }
                 className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 py-3 font-semibold text-white hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50"
               >
