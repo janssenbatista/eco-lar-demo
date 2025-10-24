@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Droplets, Zap, Trash2, TrendingDown } from "lucide-react";
 import StatsCard from "@/components/dashboard/StatsCard";
@@ -7,24 +7,34 @@ import RecentActivity from "@/components/dashboard/RecentActivity";
 import ConsumptionChart from "@/components/dashboard/ConsumptionChart";
 import PersonalizedInsights from "@/components/dashboard/PersonalizedInsights";
 import createBrowserClient from "@/api/client";
+import { useAuth } from "@/context/AuthContext";
 
 const supabase = createBrowserClient();
 
 export default function Dashboard() {
-  const { data: user } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: async () => await supabase.auth.getUser(),
-  });
+  const { currentUser } = useAuth();
+  const [userInfo, setUserInfo] = useState(null);
 
-  const { data: userInfos } = useQuery({
-    queryKey: ["infos"],
-    queryFn: async () =>
-      await supabase
-        .from("tb_user_infos")
-        .select("*")
-        .eq("user_id", user.data.user.id)
-        .single(),
-  });
+  useEffect(() => {
+    const getUserInfo = async () => {
+      if (currentUser) {
+        const { data, error } = await supabase
+          .from("tb_user_infos")
+          .select("*")
+          .eq("user_id", currentUser.id)
+          .single();
+
+        console.log(data);
+        console.log(error);
+
+        if (!error) {
+          setUserInfo(data);
+        }
+      }
+    };
+
+    getUserInfo();
+  }, [currentUser]);
 
   const { data: records = [], isLoading: recordsLoading } = useQuery({
     queryKey: ["consumptionRecords"],
@@ -32,8 +42,10 @@ export default function Dashboard() {
     initialData: [],
   });
 
+  console.log(userInfo.data);
+
   const stats = useMemo(() => {
-    if (!user) return null;
+    if (!currentUser) return null;
 
     const last30Days = records.filter((record) => {
       const recordDate = new Date(record.date);
@@ -51,7 +63,7 @@ export default function Dashboard() {
       (sum, record) => sum + Number(record.cost || 0),
       0
     );
-    const householdSize = user.household_size || 1;
+    const householdSize = currentUser.household_size || 1;
 
     return {
       water: sumByCategory("water"),
@@ -61,9 +73,9 @@ export default function Dashboard() {
       waste: sumByCategory("waste"),
       cost: totalCost,
     };
-  }, [records, user]);
+  }, [records, currentUser]);
 
-  if (!user) {
+  if (!currentUser) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
@@ -76,7 +88,7 @@ export default function Dashboard() {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">
-            Olá, {userInfos.data.name ?? "usuário"}! 👋
+            {userInfo.data && `Olá, ${userInfo.data.name ?? "usuário"}! 👋`}
           </h1>
           <p className="mt-2 text-gray-600">Acompanhe seu impacto ambiental</p>
         </div>
@@ -117,7 +129,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {stats && <PersonalizedInsights user={user} stats={stats} />}
+        {stats && <PersonalizedInsights user={currentUser} stats={stats} />}
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
