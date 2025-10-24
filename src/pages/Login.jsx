@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Card } from "@/components/ui/Card";
 import createBrowserClient from "@/api/client";
+import { useAuth } from "@/context/AuthContext";
 
 const supabase = createBrowserClient();
 
@@ -20,6 +21,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const { setCurrentUser } = useAuth();
 
   // Check if already logged in
   useEffect(() => {
@@ -111,6 +113,8 @@ export default function Login() {
           error,
         } = await supabase.auth.signUp({ email, password });
         if (!error) {
+          setCurrentUser(user);
+
           const { data } = await supabase
             .from("tb_user_infos")
             .select("onboarding_completed")
@@ -126,11 +130,16 @@ export default function Login() {
           setError("Erro ao criar conta. Tente novamente.");
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (!error) {
+          setCurrentUser(user);
+
           const { data } = await supabase.from("tb_user_infos").select("*");
           navigate(
             data.onboarding_completed
