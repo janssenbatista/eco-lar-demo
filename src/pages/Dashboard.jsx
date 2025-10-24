@@ -70,7 +70,7 @@ export default function Dashboard() {
     };
   }, [records, currentUser]);
 
-  if (!currentUser) {
+  if (!userInfo) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
