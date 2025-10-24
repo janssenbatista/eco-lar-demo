@@ -24,9 +24,6 @@ export default function Dashboard() {
           .eq("user_id", currentUser.id)
           .single();
 
-        console.log(data);
-        console.log(error);
-
         if (!error) {
           setUserInfo(data);
         }
@@ -41,8 +38,6 @@ export default function Dashboard() {
     queryFn: () => [],
     initialData: [],
   });
-
-  console.log(userInfo.data);
 
   const stats = useMemo(() => {
     if (!currentUser) return null;
@@ -88,7 +83,7 @@ export default function Dashboard() {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">
-            {userInfo.data && `Olá, ${userInfo.data.name ?? "usuário"}! 👋`}
+            {`Olá, ${userInfo?.name ?? "usuário"}! 👋`}
           </h1>
           <p className="mt-2 text-gray-600">Acompanhe seu impacto ambiental</p>
         </div>
