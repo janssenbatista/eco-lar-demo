@@ -1,43 +1,36 @@
-import React, { useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Droplets, Zap, Trash2, TrendingDown } from "lucide-react";
-import { base44 } from "@/api/mockClient";
-import { createPageUrl } from "@/utils";
 import StatsCard from "@/components/dashboard/StatsCard";
 import QuickActions from "@/components/dashboard/QuickActions";
 import RecentActivity from "@/components/dashboard/RecentActivity";
-import GoalsProgress from "@/components/dashboard/GoalsProgress";
 import ConsumptionChart from "@/components/dashboard/ConsumptionChart";
 import PersonalizedInsights from "@/components/dashboard/PersonalizedInsights";
+import createBrowserClient from "@/api/client";
+
+const supabase = createBrowserClient();
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-
-  const { data: user, isLoading: userLoading } = useQuery({
+  const { data: user } = useQuery({
     queryKey: ["currentUser"],
-    queryFn: () => base44.auth.me()
+    queryFn: async () => await supabase.auth.getUser(),
+  });
+
+  const { data: userInfos } = useQuery({
+    queryKey: ["infos"],
+    queryFn: async () =>
+      await supabase
+        .from("tb_user_infos")
+        .select("*")
+        .eq("user_id", user.data.user.id)
+        .single(),
   });
 
   const { data: records = [], isLoading: recordsLoading } = useQuery({
     queryKey: ["consumptionRecords"],
-    queryFn: () => base44.entities.ConsumptionRecord.list("-date"),
-    initialData: []
+    queryFn: () => [],
+    initialData: [],
   });
-
-  const { data: goals = [], isLoading: goalsLoading } = useQuery({
-    queryKey: ["goals"],
-    queryFn: () => base44.entities.Goal.list("-deadline"),
-    initialData: []
-  });
-
-  useEffect(() => {
-    if (!userLoading && user) {
-      if (!user.onboarding_completed) {
-        navigate(createPageUrl("Onboarding"));
-      }
-    }
-  }, [user, userLoading, navigate]);
 
   const stats = useMemo(() => {
     if (!user) return null;
@@ -54,7 +47,10 @@ export default function Dashboard() {
         .filter((record) => record.category === category)
         .reduce((sum, record) => sum + Number(record.value || 0), 0);
 
-    const totalCost = last30Days.reduce((sum, record) => sum + Number(record.cost || 0), 0);
+    const totalCost = last30Days.reduce(
+      (sum, record) => sum + Number(record.cost || 0),
+      0
+    );
     const householdSize = user.household_size || 1;
 
     return {
@@ -63,11 +59,11 @@ export default function Dashboard() {
       energy: sumByCategory("energy"),
       energyPerPerson: sumByCategory("energy") / householdSize,
       waste: sumByCategory("waste"),
-      cost: totalCost
+      cost: totalCost,
     };
   }, [records, user]);
 
-  if (userLoading || !user || !user.onboarding_completed) {
+  if (!user) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
@@ -80,12 +76,9 @@ export default function Dashboard() {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">
-            Olá, {user.full_name?.split(" ")[0] || "usuário"}! 👋
+            Olá, {userInfos.data.name || "usuário"}! 👋
           </h1>
-          <p className="mt-2 text-gray-600">
-            Casa com {user.household_size || 0} {user.household_size === 1 ? "pessoa" : "pessoas"} •
-            Acompanhe seu impacto ambiental
-          </p>
+          <p className="mt-2 text-gray-600">Acompanhe seu impacto ambiental</p>
         </div>
 
         {stats && (
@@ -135,7 +128,6 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <RecentActivity records={records} isLoading={recordsLoading} />
-          <GoalsProgress goals={goals} isLoading={goalsLoading} />
         </div>
       </div>
     </div>
