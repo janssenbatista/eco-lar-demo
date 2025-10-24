@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/Label";
 import { Progress } from "@/components/ui/Progress";
 import { Card } from "@/components/ui/Card";
 import { createPageUrl } from "@/utils";
+import { useAuth } from "@/context/AuthContext";
 
 const transportOptions = [
   { value: "car_gasoline", label: "Carro (Gasolina)", icon: "🚗" },
@@ -68,17 +69,15 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(() => ({ ...initialFormState }));
-  const [user, setUser] = useState(null);
+  const [userInfos, setUserInfos] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     let mounted = true;
 
     const guard = async () => {
       try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) throw error;
-        const currentUser = data?.user ?? null;
         if (!mounted) return;
 
         if (!currentUser) {
@@ -106,7 +105,7 @@ export default function Onboarding() {
         }
 
         // Carrega o usuário (com informações encontradas) e inicia com form vazio
-        setUser({ ...currentUser, ...userInfos });
+        setUserInfos({ ...userInfos });
         setFormData({ ...initialFormState });
       } catch (error) {
         console.error("Erro ao verificar onboarding:", error);
@@ -128,11 +127,13 @@ export default function Onboarding() {
 
   const updateUser = useMutation({
     mutationFn: async (payload) => {
-      const userId = user?.id;
-      if (!userId) throw new Error("Usuário não autenticado");
+      if (!currentUser) throw new Error("Usuário não autenticado");
       const { error } = await supabase
         .from("tb_user_infos")
-        .upsert({ user_id: userId, ...payload }, { onConflict: "user_id" });
+        .upsert(
+          { user_id: currentUser.id, ...payload },
+          { onConflict: "user_id" }
+        );
       if (error) throw error;
 
       return true;
