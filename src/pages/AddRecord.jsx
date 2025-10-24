@@ -2,21 +2,29 @@ import React, { useState, useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { base44 } from "@/api/mockClient";
 import { createPageUrl } from "@/utils";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Textarea } from "@/components/ui/Textarea";
-import { Droplets, Zap, Trash2, Fuel, Car, ArrowLeft, Save } from "lucide-react";
+import {
+  Droplets,
+  Zap,
+  Trash2,
+  Fuel,
+  Car,
+  ArrowLeft,
+  Save,
+} from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import createBrowserClient from "@/api/client";
 
 const categories = [
   { value: "water", label: "Água", icon: Droplets, units: ["litros"] },
   { value: "energy", label: "Energia", icon: Zap, units: ["kWh"] },
   { value: "waste", label: "Resíduos", icon: Trash2, units: ["kg"] },
   { value: "gas", label: "Gás", icon: Fuel, units: ["m³"] },
-  { value: "transportation", label: "Transporte", icon: Car, units: ["km"] }
+  { value: "transportation", label: "Transporte", icon: Car, units: ["km"] },
 ];
 
 const unitLabels = {
@@ -24,10 +32,13 @@ const unitLabels = {
   kWh: "kWh",
   kg: "Quilogramas",
   "m³": "Metros cúbicos",
-  km: "Quilômetros"
+  km: "Quilômetros",
 };
 
+const supabase = createBrowserClient();
+
 export default function AddRecord() {
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
@@ -35,8 +46,6 @@ export default function AddRecord() {
     category: "",
     value: "",
     unit: "",
-    cost: "",
-    notes: ""
   });
 
   const selectedCategory = useMemo(
@@ -45,11 +54,18 @@ export default function AddRecord() {
   );
 
   const createRecord = useMutation({
-    mutationFn: (payload) => base44.entities.ConsumptionRecord.create(payload),
+    mutationFn: async (payload) => {
+      const { data, error } = await supabase
+        .from("tb_consumption_records")
+        .insert({ user_id: currentUser.id, ...payload });
+
+      if (error) throw new Error(error.message);
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["consumptionRecords"] });
       navigate(createPageUrl("Dashboard"));
-    }
+    },
   });
 
   const handleCategoryChange = (event) => {
@@ -58,7 +74,7 @@ export default function AddRecord() {
     setFormData((prev) => ({
       ...prev,
       category: value,
-      unit: category?.units[0] ?? ""
+      unit: category?.units[0] ?? "",
     }));
   };
 
@@ -71,7 +87,6 @@ export default function AddRecord() {
     createRecord.mutate({
       ...formData,
       value: Number(formData.value),
-      cost: formData.cost ? Number(formData.cost) : 0
     });
   };
 
@@ -83,7 +98,9 @@ export default function AddRecord() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Registrar consumo</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Registrar consumo
+            </h1>
             <p className="text-gray-600">Acompanhe os hábitos da sua casa</p>
           </div>
         </div>
@@ -93,7 +110,13 @@ export default function AddRecord() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="record-date">Data</Label>
-                <Input id="record-date" type="date" value={formData.date} onChange={handleChange("date")} required />
+                <Input
+                  id="record-date"
+                  type="date"
+                  value={formData.date}
+                  onChange={handleChange("date")}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="record-category">Categoria</Label>
@@ -145,31 +168,11 @@ export default function AddRecord() {
                 </select>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="record-cost">Custo (R$) • opcional</Label>
-              <Input
-                id="record-cost"
-                type="number"
-                step="0.01"
-                value={formData.cost}
-                onChange={handleChange("cost")}
-                placeholder="0,00"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="record-notes">Observações</Label>
-              <Textarea
-                id="record-notes"
-                rows={4}
-                value={formData.notes}
-                onChange={handleChange("notes")}
-                placeholder="Como foi esse consumo? Alguma observação útil?"
-              />
-            </div>
-
-            <Button type="submit" className="w-full" disabled={createRecord.isPending}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={createRecord.isPending}
+            >
               <Save className="h-5 w-5" />
               {createRecord.isPending ? "Salvando..." : "Salvar registro"}
             </Button>

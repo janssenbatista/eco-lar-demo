@@ -10,26 +10,20 @@ const actions = [
     title: "Registrar Consumo",
     icon: Plus,
     color: "#3b82f6",
-    link: createPageUrl("AddRecord")
-  },
-  {
-    title: "Criar Meta",
-    icon: Target,
-    color: "#10b981",
-    link: createPageUrl("Goals")
+    link: createPageUrl("AddRecord"),
   },
   {
     title: "Ver Dicas",
     icon: Lightbulb,
     color: "#f59e0b",
-    link: createPageUrl("Tips")
+    link: createPageUrl("Tips"),
   },
   {
     title: "Calcular CO₂",
     icon: Calculator,
     color: "#a855f7",
-    link: createPageUrl("Calculator")
-  }
+    link: createPageUrl("Calculator"),
+  },
 ];
 
 export default function QuickActions() {
@@ -47,7 +41,10 @@ export default function QuickActions() {
               >
                 <span
                   className="rounded-xl p-3"
-                  style={{ backgroundColor: `${action.color}20`, color: action.color }}
+                  style={{
+                    backgroundColor: `${action.color}20`,
+                    color: action.color,
+                  }}
                 >
                   <Icon className="h-5 w-5" />
                 </span>

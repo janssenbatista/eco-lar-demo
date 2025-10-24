@@ -35,7 +35,14 @@ export default function Dashboard() {
 
   const { data: records = [], isLoading: recordsLoading } = useQuery({
     queryKey: ["consumptionRecords"],
-    queryFn: () => [],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("tb_consumption_records")
+        .select("*")
+        .eq("user_id", currentUser.id);
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
     initialData: [],
   });
 
@@ -105,21 +112,6 @@ export default function Dashboard() {
               trend={-8}
               icon={Zap}
               color="#facc15"
-            />
-            <StatsCard
-              title="Resíduos gerados"
-              value={`${stats.waste.toFixed(1)} kg`}
-              unit="últimos 30 dias"
-              trend={-15}
-              icon={Trash2}
-              color="#6b7280"
-            />
-            <StatsCard
-              title="Economia"
-              value={`R$ ${stats.cost.toFixed(2)}`}
-              unit="último mês"
-              icon={TrendingDown}
-              color="#10b981"
             />
           </div>
         )}
