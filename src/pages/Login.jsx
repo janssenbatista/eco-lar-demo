@@ -106,13 +106,21 @@ export default function Login() {
 
     try {
       if (activeTab === "signup") {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.signUp({ email, password });
         if (!error) {
           const { data } = await supabase
             .from("tb_user_infos")
-            .select("onboarding_completed");
+            .select("onboarding_completed")
+            .eq("user_id", user.id)
+            .single();
+
           navigate(
-            data ? createPageUrl("Dashboard") : createPageUrl("Onboarding")
+            data.onboarding_completed
+              ? createPageUrl("Dashboard")
+              : createPageUrl("Onboarding")
           );
         } else {
           setError("Erro ao criar conta. Tente novamente.");
@@ -123,11 +131,11 @@ export default function Login() {
           password,
         });
         if (!error) {
-          const { data } = await supabase
-            .from("tb_user_infos")
-            .select("onboarding_completed");
+          const { data } = await supabase.from("tb_user_infos").select("*");
           navigate(
-            data ? createPageUrl("Dashboard") : createPageUrl("Onboarding")
+            data.onboarding_completed
+              ? createPageUrl("Dashboard")
+              : createPageUrl("Onboarding")
           );
         } else {
           setError("Email ou senha inválidos. Tente novamente.");
