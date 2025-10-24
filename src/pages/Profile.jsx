@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/mockClient";
-import { createPageUrl } from "@/utils";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Badge } from "@/components/ui/Badge";
-import { Users, Home, Car, Zap, Droplets, Edit2, Save, X, LogOut } from "lucide-react";
+import {
+  Users,
+  Home,
+  Car,
+  Zap,
+  Droplets,
+  Edit2,
+  Save,
+  X,
+  LogOut,
+} from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const transportLabels = {
   car_gasoline: "Carro (Gasolina)",
@@ -18,31 +27,31 @@ const transportLabels = {
   public_transport: "Transporte público",
   bicycle: "Bicicleta",
   walk: "A pé",
-  mixed: "Misto"
+  mixed: "Misto",
 };
 
 const residenceLabels = {
   small: "Pequena (até 50m²)",
   medium: "Média (50-100m²)",
-  large: "Grande (+100m²)"
+  large: "Grande (+100m²)",
 };
 
 const recyclingLabels = {
   always: "Sempre",
   sometimes: "Às vezes",
   rarely: "Raramente",
-  never: "Nunca"
+  never: "Nunca",
 };
 
 export default function Profile() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(null);
+  const { logout } = useAuth();
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["currentUser"],
-    queryFn: () => base44.auth.me()
+    queryFn: () => base44.auth.me(),
   });
 
   useEffect(() => {
@@ -56,7 +65,7 @@ export default function Profile() {
         heating_type: user.heating_type || "",
         residence_size: user.residence_size || "",
         has_garden: Boolean(user.has_garden),
-        recycling_habit: user.recycling_habit || ""
+        recycling_habit: user.recycling_habit || "",
       });
     }
   }, [user]);
@@ -69,10 +78,10 @@ export default function Profile() {
       setFormData((prev) => ({
         ...prev,
         full_name: updatedUser.full_name || "",
-        email: updatedUser.email || ""
+        email: updatedUser.email || "",
       }));
       setIsEditing(false);
-    }
+    },
   });
 
   const handleSubmit = (event) => {
@@ -88,13 +97,12 @@ export default function Profile() {
       ...formData,
       full_name: trimmedName,
       email: trimmedEmail || user.email || "",
-      household_size: Number(formData.household_size)
+      household_size: Number(formData.household_size),
     });
   };
 
   const handleLogout = async () => {
-    await base44.auth.logout();
-    navigate(createPageUrl("Intro"));
+    logout();
   };
 
   if (isLoading || !formData) {
@@ -111,9 +119,15 @@ export default function Profile() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Perfil</h1>
-            <p className="text-gray-600">Gerencie informações da casa e preferências.</p>
+            <p className="text-gray-600">
+              Gerencie informações da casa e preferências.
+            </p>
           </div>
-          <Button variant="outline" className="text-red-600" onClick={handleLogout}>
+          <Button
+            variant="outline"
+            className="text-red-600"
+            onClick={handleLogout}
+          >
             <LogOut className="mr-2 h-4 w-4" /> Sair
           </Button>
         </div>
@@ -124,7 +138,9 @@ export default function Profile() {
               {user.full_name?.slice(0, 1).toUpperCase() || "U"}
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">{user.full_name}</h2>
+              <h2 className="text-xl font-bold text-gray-900">
+                {user.full_name}
+              </h2>
               <p className="text-sm text-gray-600">{user.email}</p>
               <Badge className="mt-2 bg-emerald-100 text-emerald-700">
                 {user.role === "admin" ? "Administrador" : "Usuário"}
@@ -135,12 +151,40 @@ export default function Profile() {
           {!isEditing ? (
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <InfoCard icon={<Users className="h-5 w-5 text-emerald-600" />} label="Pessoas na casa" value={user.household_size || "-"} />
-                <InfoCard icon={<Home className="h-5 w-5 text-blue-600" />} label="Tamanho da residência" value={residenceLabels[user.residence_size] || "-"} />
-                <InfoCard icon={<Car className="h-5 w-5 text-purple-600" />} label="Transporte principal" value={transportLabels[user.transportation_type] || "-"} />
-                <InfoCard icon={<Zap className="h-5 w-5 text-yellow-500" />} label="Energia" value={user.has_solar_panels ? "Com painéis solares" : "Sem painéis solares"} />
-                <InfoCard icon={<Droplets className="h-5 w-5 text-green-600" />} label="Jardim/Horta" value={user.has_garden ? "Presente" : "Não possui"} />
-                <InfoCard icon={<span className="text-lg">♻️</span>} label="Reciclagem" value={recyclingLabels[user.recycling_habit] || "-"} />
+                <InfoCard
+                  icon={<Users className="h-5 w-5 text-emerald-600" />}
+                  label="Pessoas na casa"
+                  value={user.household_size || "-"}
+                />
+                <InfoCard
+                  icon={<Home className="h-5 w-5 text-blue-600" />}
+                  label="Tamanho da residência"
+                  value={residenceLabels[user.residence_size] || "-"}
+                />
+                <InfoCard
+                  icon={<Car className="h-5 w-5 text-purple-600" />}
+                  label="Transporte principal"
+                  value={transportLabels[user.transportation_type] || "-"}
+                />
+                <InfoCard
+                  icon={<Zap className="h-5 w-5 text-yellow-500" />}
+                  label="Energia"
+                  value={
+                    user.has_solar_panels
+                      ? "Com painéis solares"
+                      : "Sem painéis solares"
+                  }
+                />
+                <InfoCard
+                  icon={<Droplets className="h-5 w-5 text-green-600" />}
+                  label="Jardim/Horta"
+                  value={user.has_garden ? "Presente" : "Não possui"}
+                />
+                <InfoCard
+                  icon={<span className="text-lg">♻️</span>}
+                  label="Reciclagem"
+                  value={recyclingLabels[user.recycling_habit] || "-"}
+                />
               </div>
               <Button onClick={() => setIsEditing(true)}>
                 <Edit2 className="mr-2 h-4 w-4" /> Editar informações
@@ -154,7 +198,12 @@ export default function Profile() {
                   <Input
                     id="profile-name"
                     value={formData.full_name}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, full_name: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        full_name: event.target.value,
+                      }))
+                    }
                     required
                     autoComplete="name"
                     placeholder="Ex: Ana Souza"
@@ -166,7 +215,12 @@ export default function Profile() {
                     id="profile-email"
                     type="email"
                     value={formData.email}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, email: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        email: event.target.value,
+                      }))
+                    }
                     autoComplete="email"
                     placeholder="Opcional"
                   />
@@ -179,15 +233,27 @@ export default function Profile() {
                     id="profile-household"
                     type="number"
                     value={formData.household_size}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, household_size: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        household_size: event.target.value,
+                      }))
+                    }
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="profile-residence">Tamanho da residência</Label>
+                  <Label htmlFor="profile-residence">
+                    Tamanho da residência
+                  </Label>
                   <select
                     id="profile-residence"
                     value={formData.residence_size}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, residence_size: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        residence_size: event.target.value,
+                      }))
+                    }
                     className="w-full rounded-lg border border-emerald-200 bg-white/90 px-3 py-2 text-sm text-gray-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                   >
                     <option value="">Selecione</option>
@@ -203,7 +269,12 @@ export default function Profile() {
                   <select
                     id="profile-transport"
                     value={formData.transportation_type}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, transportation_type: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        transportation_type: event.target.value,
+                      }))
+                    }
                     className="w-full rounded-lg border border-emerald-200 bg-white/90 px-3 py-2 text-sm text-gray-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                   >
                     <option value="">Selecione</option>
@@ -219,7 +290,12 @@ export default function Profile() {
                   <select
                     id="profile-recycling"
                     value={formData.recycling_habit}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, recycling_habit: event.target.value }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        recycling_habit: event.target.value,
+                      }))
+                    }
                     className="w-full rounded-lg border border-emerald-200 bg-white/90 px-3 py-2 text-sm text-gray-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                   >
                     <option value="">Selecione</option>
@@ -237,7 +313,12 @@ export default function Profile() {
                   <input
                     type="checkbox"
                     checked={formData.has_solar_panels}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, has_solar_panels: event.target.checked }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        has_solar_panels: event.target.checked,
+                      }))
+                    }
                   />
                   Possuo painéis solares
                 </label>
@@ -245,18 +326,33 @@ export default function Profile() {
                   <input
                     type="checkbox"
                     checked={formData.has_garden}
-                    onChange={(event) => setFormData((prev) => ({ ...prev, has_garden: event.target.checked }))}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        has_garden: event.target.checked,
+                      }))
+                    }
                   />
                   Tenho jardim/horta
                 </label>
               </div>
 
               <div className="flex gap-3">
-                <Button type="button" variant="outline" className="flex-1" onClick={() => setIsEditing(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setIsEditing(false)}
+                >
                   <X className="mr-2 h-4 w-4" /> Cancelar
                 </Button>
-                <Button type="submit" className="flex-1" disabled={updateUser.isPending}>
-                  <Save className="mr-2 h-4 w-4" /> {updateUser.isPending ? "Salvando..." : "Salvar"}
+                <Button
+                  type="submit"
+                  className="flex-1"
+                  disabled={updateUser.isPending}
+                >
+                  <Save className="mr-2 h-4 w-4" />{" "}
+                  {updateUser.isPending ? "Salvando..." : "Salvar"}
                 </Button>
               </div>
             </form>
