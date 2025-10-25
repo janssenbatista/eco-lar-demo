@@ -36,7 +36,6 @@ const navigationItems = [
     icon: LayoutDashboard,
   },
   { title: "Registrar consumo", url: createPageUrl("AddRecord"), icon: Plus },
-  { title: "Metas", url: createPageUrl("Goals"), icon: Target },
   { title: "Dicas", url: createPageUrl("Tips"), icon: Lightbulb },
   { title: "Calculadora", url: createPageUrl("Calculator"), icon: Calculator },
   { title: "Game", url: createPageUrl("Game"), icon: BrainCircuit },
