@@ -1,41 +1,68 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Lightbulb, Droplets, Zap, Trash2, Car, UtensilsCrossed, ShoppingCart } from "lucide-react";
-import { base44 } from "@/api/mockClient";
+import {
+  Lightbulb,
+  Droplets,
+  Zap,
+  Trash2,
+  Car,
+  UtensilsCrossed,
+  ShoppingCart,
+} from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Skeleton } from "@/components/ui/Skeleton";
 import TipCard from "@/components/tips/TipCard";
+import createBrowserClient from "@/api/client";
 
 const categories = [
   { value: "all", label: "Todas", icon: Lightbulb },
   { value: "water", label: "Água", icon: Droplets },
   { value: "energy", label: "Energia", icon: Zap },
   { value: "waste", label: "Resíduos", icon: Trash2 },
-  { value: "transportation", label: "Transporte", icon: Car },
+  { value: "transport", label: "Transporte", icon: Car },
   { value: "food", label: "Alimentação", icon: UtensilsCrossed },
-  { value: "shopping", label: "Compras", icon: ShoppingCart }
+  { value: "consumption", label: "Compras", icon: ShoppingCart },
 ];
+
+const supabase = createBrowserClient();
 
 export default function Tips() {
   const [activeCategory, setActiveCategory] = useState("all");
 
   const { data: tips = [], isLoading } = useQuery({
     queryKey: ["tips"],
-    queryFn: () => base44.entities.Tip.list("-id"),
-    initialData: []
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("tb_tips")
+        .select("*")
+        .order("title", { ascending: true })
+        .limit(30);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    },
+    initialData: [],
   });
 
-  const filteredTips = activeCategory === "all"
-    ? tips
-    : tips.filter((tip) => tip.category === activeCategory);
+  const filteredTips =
+    activeCategory === "all"
+      ? tips
+      : tips.filter((tip) => tip.category === activeCategory);
 
   return (
     <div className="min-h-screen px-4 py-6 md:px-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dicas sustentáveis</h1>
-          <p className="text-gray-600">Inspire-se com ações simples para transformar sua rotina.</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Dicas sustentáveis
+          </h1>
+          <p className="text-gray-600">
+            Inspire-se com ações simples para transformar sua rotina.
+          </p>
         </div>
 
         <Card className="border-0 p-4">
@@ -70,8 +97,12 @@ export default function Tips() {
           ) : filteredTips.length === 0 ? (
             <Card className="col-span-full border-0 p-12 text-center">
               <Lightbulb className="mx-auto mb-4 h-14 w-14 text-gray-300" />
-              <h3 className="text-lg font-semibold text-gray-900">Nenhuma dica encontrada</h3>
-              <p className="mt-2 text-sm text-gray-600">Selecione outra categoria para continuar explorando.</p>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Nenhuma dica encontrada
+              </h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Selecione outra categoria para continuar explorando.
+              </p>
             </Card>
           ) : (
             filteredTips.map((tip) => <TipCard key={tip.id} tip={tip} />)
