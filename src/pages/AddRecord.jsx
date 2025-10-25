@@ -7,32 +7,18 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import {
-  Droplets,
-  Zap,
-  Trash2,
-  Fuel,
-  Car,
-  ArrowLeft,
-  Save,
-} from "lucide-react";
+import { Droplets, Zap, ArrowLeft, Save } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import createBrowserClient from "@/api/client";
 
 const categories = [
   { value: "water", label: "Água", icon: Droplets, units: ["litros"] },
   { value: "energy", label: "Energia", icon: Zap, units: ["kWh"] },
-  { value: "waste", label: "Resíduos", icon: Trash2, units: ["kg"] },
-  { value: "gas", label: "Gás", icon: Fuel, units: ["m³"] },
-  { value: "transportation", label: "Transporte", icon: Car, units: ["km"] },
 ];
 
 const unitLabels = {
   litros: "Litros",
   kWh: "kWh",
-  kg: "Quilogramas",
-  "m³": "Metros cúbicos",
-  km: "Quilômetros",
 };
 
 const supabase = createBrowserClient();
