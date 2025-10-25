@@ -1,16 +1,13 @@
 import React from "react";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { Droplets, Zap, Trash2, Fuel, Car } from "lucide-react";
-import { format } from "date-fns";
+import { Droplets, Zap } from "lucide-react";
+import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const icons = {
   water: { icon: Droplets, color: "#2563eb", label: "Água" },
   energy: { icon: Zap, color: "#eab308", label: "Energia" },
-  waste: { icon: Trash2, color: "#6b7280", label: "Resíduos" },
-  gas: { icon: Fuel, color: "#f97316", label: "Gás" },
-  transportation: { icon: Car, color: "#a855f7", label: "Transporte" }
 };
 
 export default function RecentActivity({ records = [], isLoading }) {
@@ -33,35 +30,50 @@ export default function RecentActivity({ records = [], isLoading }) {
     );
   }
 
-  const recentRecords = records.slice(0, 5);
+  const recentRecords = records.slice(0, 10);
 
   return (
     <Card className="border-0 p-6">
       <h3 className="mb-4 font-semibold text-gray-900">Atividade recente</h3>
       <div className="space-y-3">
         {recentRecords.length === 0 ? (
-          <p className="py-4 text-center text-sm text-gray-500">Nenhum registro ainda</p>
+          <p className="py-4 text-center text-sm text-gray-500">
+            Nenhum registro ainda
+          </p>
         ) : (
           recentRecords.map((record) => {
             const iconData = icons[record.category];
             if (!iconData) return null;
             const Icon = iconData.icon;
             return (
-              <div key={record.id} className="flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50">
+              <div
+                key={record.id}
+                className="flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50"
+              >
                 <span
                   className="flex h-10 w-10 items-center justify-center rounded-xl"
-                  style={{ backgroundColor: `${iconData.color}1a`, color: iconData.color }}
+                  style={{
+                    backgroundColor: `${iconData.color}1a`,
+                    color: iconData.color,
+                  }}
                 >
                   <Icon className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-gray-900">{iconData.label}</p>
+                  <p className="truncate text-sm font-medium text-gray-900">
+                    {iconData.label}
+                  </p>
                   <p className="text-xs text-gray-500">
-                    {record.value} {record.unit} • {format(new Date(record.date), "d MMM", { locale: ptBR })}
+                    {record.value} {record.unit} •{" "}
+                    {format(parseISO(record.date), "dd MMM yy", {
+                      locale: ptBR,
+                    })}
                   </p>
                 </div>
                 {record.cost ? (
-                  <p className="text-sm font-semibold text-gray-700">R$ {Number(record.cost).toFixed(2)}</p>
+                  <p className="text-sm font-semibold text-gray-700">
+                    R$ {Number(record.cost).toFixed(2)}
+                  </p>
                 ) : null}
               </div>
             );
