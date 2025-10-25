@@ -8,10 +8,14 @@ const transportImpact = {
   car_electric: { co2: "baixo", label: "Carro Elétrico", color: "#16a34a" },
   car_hybrid: { co2: "médio", label: "Carro Híbrido", color: "#ca8a04" },
   motorcycle: { co2: "médio", label: "Moto", color: "#ca8a04" },
-  public_transport: { co2: "baixo", label: "Transporte Público", color: "#16a34a" },
+  public_transport: {
+    co2: "baixo",
+    label: "Transporte Público",
+    color: "#16a34a",
+  },
   bicycle: { co2: "zero", label: "Bicicleta", color: "#059669" },
   walk: { co2: "zero", label: "A pé", color: "#059669" },
-  mixed: { co2: "médio", label: "Misto", color: "#ca8a04" }
+  mixed: { co2: "médio", label: "Misto", color: "#ca8a04" },
 };
 
 export default function PersonalizedInsights({ user, stats }) {
@@ -21,22 +25,22 @@ export default function PersonalizedInsights({ user, stats }) {
   const energyPerPerson = Number(stats.energyPerPerson || 0);
 
   if (waterPerPerson) {
-    const average = 150;
+    const average = 5;
     insights.push(
       waterPerPerson < average
         ? {
             icon: Droplets,
             title: "Consumo de água exemplar",
-            message: `Você consome ${waterPerPerson} L/dia por pessoa, abaixo da média brasileira de ${average} L. Continue assim!`,
+            message: `Você consome ${waterPerPerson.toFixed(2)} L/dia por pessoa, abaixo da média brasileira de ${average} L. Continue assim!`,
             color: "#047857",
-            background: "#d1fae5"
+            background: "#d1fae5",
           }
         : {
             icon: Droplets,
             title: "Olho no banho",
             message: `O consumo por pessoa está em ${waterPerPerson.toFixed(2)}L/dia. Reduza o tempo de banho e feche torneiras ao ensaboar louça.`,
             color: "#2563eb",
-            background: "#dbeafe"
+            background: "#dbeafe",
           }
     );
   }
@@ -45,17 +49,19 @@ export default function PersonalizedInsights({ user, stats }) {
     insights.push({
       icon: Zap,
       title: "Energia solar em uso",
-      message: "Sua casa gera energia limpa. Compartilhe o excedente com a rede sempre que possível.",
+      message:
+        "Sua casa gera energia limpa. Compartilhe o excedente com a rede sempre que possível.",
       color: "#f59e0b",
-      background: "#fef3c7"
+      background: "#fef3c7",
     });
-  } else if (energyPerPerson > 100) {
+  } else if (energyPerPerson > 3.33) {
     insights.push({
       icon: Zap,
       title: "Que tal energia solar?",
-      message: "Seu consumo está acima da média. Painéis solares podem reduzir a conta em até 95%.",
+      message:
+        "Seu consumo está acima da média. Painéis solares podem reduzir a conta em até 95%.",
       color: "#c2410c",
-      background: "#ffedd5"
+      background: "#ffedd5",
     });
   }
 
@@ -65,9 +71,9 @@ export default function PersonalizedInsights({ user, stats }) {
       insights.push({
         icon: AlertCircle,
         title: "Transporte com alto impacto",
-        message: `${transport.label} gera muitas emissões. Planeje rotas compartilhadas ou use transporte coletivo.` ,
+        message: `${transport.label} gera muitas emissões. Planeje rotas compartilhadas ou use transporte coletivo.`,
         color: transport.color,
-        background: "#fee2e2"
+        background: "#fee2e2",
       });
     } else if (transport.co2 === "zero") {
       insights.push({
@@ -75,7 +81,7 @@ export default function PersonalizedInsights({ user, stats }) {
         title: "Mobilidade sustentável",
         message: `${transport.label} não gera CO₂. Excelente escolha para o planeta!`,
         color: transport.color,
-        background: "#d1fae5"
+        background: "#d1fae5",
       });
     }
   }
@@ -84,9 +90,10 @@ export default function PersonalizedInsights({ user, stats }) {
     insights.push({
       icon: Leaf,
       title: "Jardim ativo",
-      message: "Sua área verde ajuda na captura de carbono e pode produzir alimentos frescos.",
+      message:
+        "Sua área verde ajuda na captura de carbono e pode produzir alimentos frescos.",
       color: "#16a34a",
-      background: "#dcfce7"
+      background: "#dcfce7",
     });
   }
 
@@ -94,8 +101,12 @@ export default function PersonalizedInsights({ user, stats }) {
     <Card className="mb-6 border-0 bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-cyan-500/5 p-6">
       <div className="mb-4 flex items-center gap-3">
         <Sparkles className="h-5 w-5 text-emerald-600" />
-        <h3 className="text-lg font-semibold text-gray-900">Insights personalizados</h3>
-        <Badge className="ml-auto bg-emerald-100 text-emerald-700">Para sua casa</Badge>
+        <h3 className="text-lg font-semibold text-gray-900">
+          Insights personalizados
+        </h3>
+        <Badge className="ml-auto bg-emerald-100 text-emerald-700">
+          Para sua casa
+        </Badge>
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {insights.map((insight, index) => {
@@ -104,7 +115,10 @@ export default function PersonalizedInsights({ user, stats }) {
             <div
               key={index}
               className="rounded-xl border border-white/60 p-4"
-              style={{ backgroundColor: insight.background, color: insight.color }}
+              style={{
+                backgroundColor: insight.background,
+                color: insight.color,
+              }}
             >
               <div className="flex items-start gap-3">
                 <Icon className="mt-0.5 h-5 w-5 flex-shrink-0" />
@@ -121,10 +135,22 @@ export default function PersonalizedInsights({ user, stats }) {
       </div>
       <div className="mt-4 border-t border-gray-200 pt-4 text-sm text-gray-600">
         <span>
-          🏠 Residência {user?.residence_size === "small" ? "pequena" : user?.residence_size === "medium" ? "média" : "grande"}
+          🏠 Residência{" "}
+          {user?.residence_size === "small"
+            ? "pequena"
+            : user?.residence_size === "medium"
+              ? "média"
+              : "grande"}
         </span>
         <span className="ml-4">
-          ♻️ Recicla: {user?.recycling_habit === "always" ? "Sempre" : user?.recycling_habit === "sometimes" ? "Às vezes" : user?.recycling_habit === "rarely" ? "Raramente" : "Nunca"}
+          ♻️ Recicla:{" "}
+          {user?.recycling_habit === "always"
+            ? "Sempre"
+            : user?.recycling_habit === "sometimes"
+              ? "Às vezes"
+              : user?.recycling_habit === "rarely"
+                ? "Raramente"
+                : "Nunca"}
         </span>
       </div>
     </Card>
