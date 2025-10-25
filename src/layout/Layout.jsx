@@ -9,6 +9,7 @@ import {
   Calculator,
   BrainCircuit,
   User,
+  LogOut,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -28,6 +29,7 @@ import {
 } from "@/components/ui/Sidebar";
 import { createPageUrl } from "@/utils";
 import { useAuth } from "@/context/AuthContext";
+import Button from "@/components/ui/Button";
 
 const navigationItems = [
   {
@@ -46,7 +48,7 @@ function LayoutShell() {
   const location = useLocation();
   const closeSidebar = useCloseSidebar();
   const { isOpen } = useSidebarState();
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,6 +58,8 @@ function LayoutShell() {
     }
     closeSidebar();
   }, [location.pathname, closeSidebar]);
+
+  const handleLogout = () => logout();
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
@@ -115,7 +119,7 @@ function LayoutShell() {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter className="border-t border-emerald-100/70">
+        <SidebarFooter className="flex flex-col gap-4 border-t border-emerald-100/70">
           <div className="rounded-xl border border-emerald-200/60 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 p-4">
             <p className="text-sm font-semibold text-gray-900">
               💚 Impacto positivo
@@ -124,6 +128,13 @@ function LayoutShell() {
               Cada hábito sustentável conta muito!
             </p>
           </div>
+          <Button
+            variant="outline"
+            className="text-red-600 w-full"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-4 w-4" /> Sair
+          </Button>
         </SidebarFooter>
       </Sidebar>
       <div className="flex flex-1 flex-col">

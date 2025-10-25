@@ -140,13 +140,6 @@ export default function Profile() {
               Gerencie informações da casa e preferências.
             </p>
           </div>
-          <Button
-            variant="outline"
-            className="text-red-600"
-            onClick={handleLogout}
-          >
-            <LogOut className="mr-2 h-4 w-4" /> Sair
-          </Button>
         </div>
 
         <Card className="border-0 p-6 shadow-lg md:p-8">
