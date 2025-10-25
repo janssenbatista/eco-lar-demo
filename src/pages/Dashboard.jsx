@@ -96,7 +96,7 @@ export default function Dashboard() {
         </div>
 
         {stats && (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-8 md:gap-10 lg:grid-cols-12">
             <StatsCard
               title="Consumo de água"
               value={`${stats.water.toFixed(0)} L`}

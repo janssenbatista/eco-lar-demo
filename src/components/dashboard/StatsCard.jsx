@@ -1,33 +1,20 @@
 import React from "react";
 import { Card } from "@/components/ui/Card";
-import { TrendingDown, TrendingUp, Minus } from "lucide-react";
-import clsx from "clsx";
 
 export default function StatsCard({
   title,
   value,
   unit,
-  trend,
   icon: Icon,
   color,
   size = "normal",
 }) {
-  const trendIcon = trend > 0 ? TrendingUp : trend < 0 ? TrendingDown : Minus;
-
-  const trendColors =
-    trend > 0
-      ? "text-red-600 bg-red-50"
-      : trend < 0
-      ? "text-emerald-600 bg-emerald-50"
-      : "text-gray-600 bg-gray-50";
-
-  const cardClasses = clsx(
-    "relative overflow-hidden border-0 bg-white/90 backdrop-blur-sm transition-all duration-300",
-    size === "large" && "md:col-span-2 md:row-span-2"
-  );
-
   return (
-    <Card className={cardClasses}>
+    <Card
+      className={
+        "relative overflow-hidden border-0 bg-white/90 backdrop-blur-sm transition-all duration-300 md:col-span-4"
+      }
+    >
       <div
         className="absolute right-0 top-0 h-32 w-32 -translate-y-10 translate-x-8 rounded-full opacity-10"
         style={{ backgroundColor: color }}
