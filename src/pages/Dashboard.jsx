@@ -35,7 +35,14 @@ export default function Dashboard() {
 
   const { data: records = [], isLoading: recordsLoading } = useQuery({
     queryKey: ["consumptionRecords"],
-    queryFn: () => [],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("tb_consumption_records")
+        .select("*")
+        .eq("user_id", currentUser.id);
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
     initialData: [],
   });
 
@@ -72,7 +79,7 @@ export default function Dashboard() {
 
   if (!userInfo) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+      <div className="flex h-screen w-full items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
       </div>
     );
@@ -89,7 +96,7 @@ export default function Dashboard() {
         </div>
 
         {stats && (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-8 md:gap-10 lg:grid-cols-12">
             <StatsCard
               title="Consumo de água"
               value={`${stats.water.toFixed(0)} L`}
@@ -105,21 +112,6 @@ export default function Dashboard() {
               trend={-8}
               icon={Zap}
               color="#facc15"
-            />
-            <StatsCard
-              title="Resíduos gerados"
-              value={`${stats.waste.toFixed(1)} kg`}
-              unit="últimos 30 dias"
-              trend={-15}
-              icon={Trash2}
-              color="#6b7280"
-            />
-            <StatsCard
-              title="Economia"
-              value={`R$ ${stats.cost.toFixed(2)}`}
-              unit="último mês"
-              icon={TrendingDown}
-              color="#10b981"
             />
           </div>
         )}

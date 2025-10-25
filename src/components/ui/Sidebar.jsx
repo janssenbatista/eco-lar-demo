@@ -1,5 +1,11 @@
 import clsx from "clsx";
-import React, { createContext, useContext, useMemo, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
 
 const SidebarContext = createContext(null);
 
@@ -8,9 +14,14 @@ export function SidebarProvider({ children }) {
 
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
   const close = useCallback(() => setIsOpen(false), []);
-  const value = useMemo(() => ({ isOpen, toggle, close }), [isOpen, toggle, close]);
+  const value = useMemo(
+    () => ({ isOpen, toggle, close }),
+    [isOpen, toggle, close]
+  );
 
-  return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
+  return (
+    <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>
+  );
 }
 
 function useSidebar() {
@@ -45,7 +56,9 @@ export function SidebarHeader({ className, children }) {
 }
 
 export function SidebarContent({ className, children }) {
-  return <div className={clsx("flex-1 overflow-y-auto px-4", className)}>{children}</div>;
+  return (
+    <div className={clsx("overflow-y-auto px-4", className)}>{children}</div>
+  );
 }
 
 export function SidebarFooter({ className, children }) {
@@ -57,7 +70,16 @@ export function SidebarGroup({ className, children }) {
 }
 
 export function SidebarGroupLabel({ className, children }) {
-  return <p className={clsx("px-2 text-xs font-semibold uppercase tracking-wide text-gray-500", className)}>{children}</p>;
+  return (
+    <p
+      className={clsx(
+        "px-2 text-xs font-semibold uppercase tracking-wide text-gray-500",
+        className
+      )}
+    >
+      {children}
+    </p>
+  );
 }
 
 export function SidebarGroupContent({ className, children }) {
@@ -101,8 +123,19 @@ export function SidebarTrigger({ className }) {
       )}
     >
       <span className="sr-only">Alternar menu</span>
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 6h16M4 12h16M4 18h16" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+          d="M4 6h16M4 12h16M4 18h16"
+        />
       </svg>
     </button>
   );
