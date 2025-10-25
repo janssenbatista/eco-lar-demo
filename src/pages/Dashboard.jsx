@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Droplets, Zap, Trash2, TrendingDown } from "lucide-react";
+import { Droplets, Zap } from "lucide-react";
 import StatsCard from "@/components/dashboard/StatsCard";
 import QuickActions from "@/components/dashboard/QuickActions";
 import RecentActivity from "@/components/dashboard/RecentActivity";
@@ -65,17 +65,17 @@ export default function Dashboard() {
       (sum, record) => sum + Number(record.cost || 0),
       0
     );
-    const householdSize = currentUser.household_size || 1;
+    const householdSize = userInfo?.household_size ?? 1;
 
     return {
       water: sumByCategory("water"),
-      waterPerPerson: sumByCategory("water") / householdSize,
+      waterPerPerson: sumByCategory("water") / householdSize / 30,
       energy: sumByCategory("energy"),
-      energyPerPerson: sumByCategory("energy") / householdSize,
+      energyPerPerson: sumByCategory("energy") / householdSize / 30,
       waste: sumByCategory("waste"),
       cost: totalCost,
     };
-  }, [records, currentUser]);
+  }, [records, currentUser, userInfo]);
 
   if (!userInfo) {
     return (
@@ -90,7 +90,7 @@ export default function Dashboard() {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">
-            {`Olá, ${userInfo?.name ?? "usuário"}! 👋`}
+            {`Olá, ${userInfo?.name.split(" ")[0] ?? "usuário"}! 👋`}
           </h1>
           <p className="mt-2 text-gray-600">Acompanhe seu impacto ambiental</p>
         </div>
@@ -116,7 +116,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {stats && <PersonalizedInsights user={currentUser} stats={stats} />}
+        {stats && <PersonalizedInsights user={userInfo} stats={stats} />}
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
