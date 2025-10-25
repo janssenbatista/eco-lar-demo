@@ -90,7 +90,7 @@ export default function Dashboard() {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">
-            {`Olá, ${userInfo?.name ?? "usuário"}! 👋`}
+            {`Olá, ${userInfo?.name.split(" ")[0] ?? "usuário"}! 👋`}
           </h1>
           <p className="mt-2 text-gray-600">Acompanhe seu impacto ambiental</p>
         </div>
