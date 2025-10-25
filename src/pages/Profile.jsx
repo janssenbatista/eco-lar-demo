@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/mockClient";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -18,6 +17,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import createBrowserClient from "@/api/client";
 
 const transportLabels = {
   car_gasoline: "Carro (Gasolina)",
@@ -43,42 +43,62 @@ const recyclingLabels = {
   never: "Nunca",
 };
 
+const supabase = createBrowserClient();
+
 export default function Profile() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(null);
-  const { logout } = useAuth();
+  const { currentUser, logout } = useAuth();
 
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: () => base44.auth.me(),
+  const { data: userInfo, isLoading } = useQuery({
+    queryKey: ["userInfo"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("tb_user_infos")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .single();
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data;
+    },
   });
 
   useEffect(() => {
-    if (user) {
+    if (userInfo) {
       setFormData({
-        full_name: user.full_name || "",
-        email: user.email || "",
-        household_size: user.household_size || "",
-        transportation_type: user.transportation_type || "",
-        has_solar_panels: Boolean(user.has_solar_panels),
-        heating_type: user.heating_type || "",
-        residence_size: user.residence_size || "",
-        has_garden: Boolean(user.has_garden),
-        recycling_habit: user.recycling_habit || "",
+        name: userInfo.name || "",
+        household_size: userInfo.household_size || "",
+        transportation_type: userInfo.transportation_type || "",
+        has_solar_panels: Boolean(userInfo.has_solar_panels),
+        heating_type: userInfo.heating_type || "",
+        residence_size: userInfo.residence_size || "",
+        has_garden: Boolean(userInfo.has_garden),
+        recycling_habit: userInfo.recycling_habit || "",
       });
     }
-  }, [user]);
+  }, [userInfo]);
 
   const updateUser = useMutation({
-    mutationFn: (payload) => base44.auth.updateMe(payload),
+    mutationFn: async (payload) => {
+      const { data, error } = await supabase
+        .from("tb_user_infos")
+        .upsert({ user_id: currentUser.id, ...payload });
+      if (error) {
+        console.log(error);
+
+        throw new Error(error.message);
+      }
+      return data;
+    },
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["currentUser"], updatedUser);
-      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      queryClient.setQueryData(["userInfo"], updatedUser);
+      queryClient.invalidateQueries({ queryKey: ["userInfo"] });
       setFormData((prev) => ({
         ...prev,
-        full_name: updatedUser.full_name || "",
-        email: updatedUser.email || "",
+        name: updatedUser?.name ?? "",
       }));
       setIsEditing(false);
     },
@@ -86,17 +106,14 @@ export default function Profile() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const trimmedName = formData.full_name.trim();
+    const trimmedName = formData.name.trim();
     if (!trimmedName) {
       return;
     }
 
-    const trimmedEmail = formData.email.trim();
-
     updateUser.mutate({
       ...formData,
-      full_name: trimmedName,
-      email: trimmedEmail || user.email || "",
+      name: trimmedName,
       household_size: Number(formData.household_size),
     });
   };
@@ -135,42 +152,42 @@ export default function Profile() {
         <Card className="border-0 p-6 shadow-lg md:p-8">
           <div className="mb-6 flex items-center gap-4 border-b border-emerald-100 pb-6">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-2xl font-bold text-white">
-              {user.full_name?.slice(0, 1).toUpperCase() || "U"}
+              {userInfo?.name.slice(0, 1).toUpperCase() ?? "U"}
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-gray-900">
-                {user.full_name}
+                {userInfo?.name}
               </h2>
-              <p className="text-sm text-gray-600">{user.email}</p>
+              <p className="text-sm text-gray-600">{currentUser.email}</p>
               <Badge className="mt-2 bg-emerald-100 text-emerald-700">
-                {user.role === "admin" ? "Administrador" : "Usuário"}
+                Usuário
               </Badge>
             </div>
           </div>
 
-          {!isEditing ? (
+          {!isEditing && userInfo ? (
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <InfoCard
                   icon={<Users className="h-5 w-5 text-emerald-600" />}
                   label="Pessoas na casa"
-                  value={user.household_size || "-"}
+                  value={userInfo.household_size || "-"}
                 />
                 <InfoCard
                   icon={<Home className="h-5 w-5 text-blue-600" />}
                   label="Tamanho da residência"
-                  value={residenceLabels[user.residence_size] || "-"}
+                  value={residenceLabels[userInfo.residence_size] || "-"}
                 />
                 <InfoCard
                   icon={<Car className="h-5 w-5 text-purple-600" />}
                   label="Transporte principal"
-                  value={transportLabels[user.transportation_type] || "-"}
+                  value={transportLabels[userInfo.transportation_type] || "-"}
                 />
                 <InfoCard
                   icon={<Zap className="h-5 w-5 text-yellow-500" />}
                   label="Energia"
                   value={
-                    user.has_solar_panels
+                    userInfo.has_solar_panels
                       ? "Com painéis solares"
                       : "Sem painéis solares"
                   }
@@ -178,12 +195,12 @@ export default function Profile() {
                 <InfoCard
                   icon={<Droplets className="h-5 w-5 text-green-600" />}
                   label="Jardim/Horta"
-                  value={user.has_garden ? "Presente" : "Não possui"}
+                  value={userInfo.has_garden ? "Presente" : "Não possui"}
                 />
                 <InfoCard
                   icon={<span className="text-lg">♻️</span>}
                   label="Reciclagem"
-                  value={recyclingLabels[user.recycling_habit] || "-"}
+                  value={recyclingLabels[userInfo.recycling_habit] || "-"}
                 />
               </div>
               <Button onClick={() => setIsEditing(true)}>
@@ -193,36 +210,20 @@ export default function Profile() {
           ) : (
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 md:col-span-2">
                   <Label htmlFor="profile-name">Nome completo</Label>
                   <Input
                     id="profile-name"
-                    value={formData.full_name}
+                    value={formData.name}
                     onChange={(event) =>
                       setFormData((prev) => ({
                         ...prev,
-                        full_name: event.target.value,
+                        name: event.target.value,
                       }))
                     }
                     required
                     autoComplete="name"
                     placeholder="Ex: Ana Souza"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="profile-email">E-mail</Label>
-                  <Input
-                    id="profile-email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(event) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        email: event.target.value,
-                      }))
-                    }
-                    autoComplete="email"
-                    placeholder="Opcional"
                   />
                 </div>
               </div>
