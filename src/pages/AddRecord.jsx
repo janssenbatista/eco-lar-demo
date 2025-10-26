@@ -85,7 +85,7 @@ export default function AddRecord() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Registrar consumo
+              Registrar consumo diário
             </h1>
             <p className="text-gray-600">Acompanhe os hábitos da sua casa</p>
           </div>
