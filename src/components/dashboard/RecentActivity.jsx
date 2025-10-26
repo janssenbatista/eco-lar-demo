@@ -1,16 +1,36 @@
 import React from "react";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { Droplets, Zap } from "lucide-react";
+import { Droplets, Trash, Zap } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import createBrowserClient from "@/api/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const icons = {
   water: { icon: Droplets, color: "#2563eb", label: "Água" },
   energy: { icon: Zap, color: "#eab308", label: "Energia" },
 };
 
+const supabase = createBrowserClient();
+
 export default function RecentActivity({ records = [], isLoading }) {
+  const queryClient = useQueryClient();
+
+  const handleDelete = async (recordId) => {
+    const { error } = await supabase
+      .from("tb_consumption_records")
+      .delete()
+      .eq("id", recordId);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["consumptionRecords"] });
+  };
+
   if (isLoading) {
     return (
       <Card className="border-0 p-6">
@@ -48,33 +68,35 @@ export default function RecentActivity({ records = [], isLoading }) {
             return (
               <div
                 key={record.id}
-                className="flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50"
+                className="flex items-center justify-between rounded-xl p-3 transition-colors hover:bg-gray-50"
               >
-                <span
-                  className="flex h-10 w-10 items-center justify-center rounded-xl"
-                  style={{
-                    backgroundColor: `${iconData.color}1a`,
-                    color: iconData.color,
-                  }}
-                >
-                  <Icon className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-gray-900">
-                    {iconData.label}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {record.value} {record.unit} •{" "}
-                    {format(parseISO(record.date), "dd MMM yy", {
-                      locale: ptBR,
-                    })}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <span
+                    className="flex h-10 w-10 items-center justify-center rounded-xl"
+                    style={{
+                      backgroundColor: `${iconData.color}1a`,
+                      color: iconData.color,
+                    }}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-gray-900">
+                      {iconData.label}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {record.value} {record.unit} •{" "}
+                      {format(parseISO(record.date), "dd MMM yy", {
+                        locale: ptBR,
+                      })}
+                    </p>
+                  </div>
                 </div>
-                {record.cost ? (
-                  <p className="text-sm font-semibold text-gray-700">
-                    R$ {Number(record.cost).toFixed(2)}
-                  </p>
-                ) : null}
+                <Trash
+                  size={28}
+                  className="p-1 rounded-md text-red-500 cursor-pointer hover:bg-red-100 transition-all ease-linear duration-150"
+                  onClick={() => handleDelete(record.id)}
+                />
               </div>
             );
           })

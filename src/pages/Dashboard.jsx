@@ -39,7 +39,8 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from("tb_consumption_records")
         .select("*")
-        .eq("user_id", currentUser.id);
+        .eq("user_id", currentUser.id)
+        .order("date", { ascending: false });
       if (error) throw new Error(error.message);
       return data ?? [];
     },
@@ -49,22 +50,11 @@ export default function Dashboard() {
   const stats = useMemo(() => {
     if (!currentUser) return null;
 
-    const last30Days = records.filter((record) => {
-      const recordDate = new Date(record.date);
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      return recordDate >= thirtyDaysAgo;
-    });
-
     const sumByCategory = (category) =>
-      last30Days
+      records
         .filter((record) => record.category === category)
         .reduce((sum, record) => sum + Number(record.value || 0), 0);
 
-    const totalCost = last30Days.reduce(
-      (sum, record) => sum + Number(record.cost || 0),
-      0
-    );
     const householdSize = userInfo?.household_size ?? 1;
 
     return {
@@ -73,7 +63,6 @@ export default function Dashboard() {
       energy: sumByCategory("energy"),
       energyPerPerson: sumByCategory("energy") / householdSize / 30,
       waste: sumByCategory("waste"),
-      cost: totalCost,
     };
   }, [records, currentUser, userInfo]);
 
