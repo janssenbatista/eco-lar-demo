@@ -114,28 +114,6 @@ src/
 - **Dicas e insights**: conteúdo dinâmico que reforça hábitos sustentáveis.
 - **Game (quiz)**: 10 perguntas sorteadas entre 50, avaliando conhecimentos sobre sustentabilidade.
 
-## Dados e persistência
-
-A pasta `src/api` contém o cliente mock (`mockClient.js`). Ele usa `localStorage` para simular uma API:
-
-- `base44.auth` fornece dados do usuário e controla o estado de onboarding/intro.
-- `base44.entities` expõe endpoints para registros de consumo, metas e dicas.
-- Todos os métodos usam `Promise` com atraso artificial para imitar chamadas reais.
-
-Para "resetar" o usuário/dados durante o desenvolvimento, limpe o `localStorage` do navegador ou invoque a função `resetDemoData` pelo console.
-
-## Personalização
-
-- Ajuste textos e traduções diretamente nas páginas em `src/pages`.
-- Novos componentes podem ser adicionados em `src/components` e reutilizados em diferentes telas.
-- A navegação lateral é controlada em `src/layout/Layout.jsx`.
-
-## Próximos passos sugeridos
-
-- Conectar a aplicação a uma API real para dados persistentes entre dispositivos.
-- Adicionar testes automatizados para componentes críticos.
-- Implementar autenticação multiusuário.
-
 ---
 
 Sinta-se à vontade para abrir issues ou pull requests com melhorias e correções. Boas práticas sustentáveis começam com pequenas ações! 🌱
