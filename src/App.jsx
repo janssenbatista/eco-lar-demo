@@ -11,6 +11,7 @@ import Game from "@/pages/Game";
 import Profile from "@/pages/Profile";
 import Intro from "@/pages/Intro";
 import Onboarding from "@/pages/Onboarding";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { createPageUrl } from "@/utils";
 
 export default function App() {
@@ -22,10 +23,25 @@ export default function App() {
       />
       <Route path={createPageUrl("Intro")} element={<Intro />} />
       <Route path={createPageUrl("Login")} element={<Login />} />
-      <Route path={createPageUrl("Onboarding")} element={<Onboarding />} />
-      <Route element={<Layout />}>
+      <Route
+        path={createPageUrl("Onboarding")}
+        element={
+          <ProtectedRoute>
+            <Onboarding />
+          </ProtectedRoute>
+        }
+      />
+      {/* Rotas com Layout (sidebar) */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
         <Route path={createPageUrl("Dashboard")} element={<Dashboard />} />
         <Route path={createPageUrl("AddRecord")} element={<AddRecord />} />
+        <Route path={createPageUrl("Goals")} element={<Goals />} />
         <Route path={createPageUrl("Tips")} element={<Tips />} />
         <Route path={createPageUrl("Calculator")} element={<Calculator />} />
         <Route path={createPageUrl("Game")} element={<Game />} />

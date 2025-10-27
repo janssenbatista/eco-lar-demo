@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   Leaf,
   LayoutDashboard,
@@ -48,14 +48,10 @@ function LayoutShell() {
   const location = useLocation();
   const closeSidebar = useCloseSidebar();
   const { isOpen } = useSidebarState();
-  const { currentUser, logout } = useAuth();
-  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
-    if (!currentUser) {
-      navigate(createPageUrl("Login"));
-      return;
-    }
+    // Fecha sidebar ao navegar (mobile)
     closeSidebar();
   }, [location.pathname, closeSidebar]);
 

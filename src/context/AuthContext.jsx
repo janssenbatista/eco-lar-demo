@@ -12,14 +12,29 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth
-      .getUser()
-      .then(({ data: { user } }) => {
-        setCurrentUser(user);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [loading]);
+    let isMounted = true;
+
+    const checkAuth = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (isMounted) {
+          setCurrentUser(user);
+          setLoading(false);
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("Erro ao verificar autenticação:", error);
+          setLoading(false);
+        }
+      }
+    };
+
+    checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const logout = async () => {
     await supabase.auth.signOut();
