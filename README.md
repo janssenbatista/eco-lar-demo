@@ -153,7 +153,7 @@ Essas rotas são acessíveis sem autenticação:
 
 - 🌍 `/intro` - Tela de boas-vindas com vídeo motivacional
 - 🔑 `/login` - Login e Signup com validação
-- `/` - Redireciona para `/intro`
+- 🏠 `/` - Redireciona para `/intro`
 
 ### Componentes Principais
 
@@ -205,61 +205,45 @@ Componente que envolve rotas protegidas:
 #### `tb_user_infos`
 Armazena informações do usuário e status do onboarding:
 
-```sql
+```
 - user_id (UUID, PK) - ID do usuário do Supabase Auth
-- name (TEXT) - Nome do usuário
-- household_size (INT) - Número de pessoas na casa
-- transportation_type (TEXT) - Tipo de transporte principal
-- heating_type (TEXT) - Tipo de aquecimento/energia
-- residence_size (TEXT) - Tamanho da residência
+- name (VARCHAR) - Nome do usuário
+- household_size (SMALLINT) - Número de pessoas na casa
+- transportation_type (VARCHAR) - Tipo de transporte principal
 - has_solar_panels (BOOLEAN) - Tem painéis solares?
+- heating_type (VARCHAR) - Tipo de aquecimento/energia
+- residence_size (VARCHAR) - Tamanho da residência
 - has_garden (BOOLEAN) - Tem jardim/horta?
-- recycling_habit (TEXT) - Hábito de reciclagem
+- recycling_habit (VARCHAR) - Hábito de reciclagem
+- monthly_income_range (VARCHAR) - Faixa de renda mensal
+- has_seen_intro (BOOLEAN) - Já viu a introdução?
 - onboarding_completed (BOOLEAN) - Completou onboarding?
-- created_at (TIMESTAMP) - Data de criação
-- updated_at (TIMESTAMP) - Data de atualização
 ```
 
 #### `tb_consumption_records`
 Registros de consumo de recursos:
 
-```sql
+```
 - id (UUID, PK)
-- user_id (UUID, FK) - Referencia tb_user_infos
-- category (TEXT) - "water", "energy", "waste"
-- value (NUMERIC) - Valor consumido
 - date (DATE) - Data do consumo
-- cost (NUMERIC) - Custo do consumo
-- created_at (TIMESTAMP)
+- category (VARCHAR) - "water", "energy", "waste"
+- value (NUMERIC) - Valor consumido
+- unit (VARCHAR) - Unidade de medida (ex: "L", "kWh", "kg")
+- user_id (UUID, FK) - Referencia tb_user_infos
 ```
 
 #### `tb_tips`
 Dicas e conselhos sustentáveis:
 
-```sql
-- id (UUID, PK)
-- title (TEXT) - Título da dica
-- description (TEXT) - Descrição completa
-- category (TEXT) - Categoria (água, energia, etc.)
-- impact (TEXT) - Impacto ambiental
-- difficulty (TEXT) - Nível de dificuldade
-- icon (TEXT) - Ícone emoji
-- created_at (TIMESTAMP)
 ```
-
-#### `tb_goals`
-Metas sustentáveis do usuário:
-
-```sql
 - id (UUID, PK)
+- title (VARCHAR) - Título da dica
+- content (VARCHAR) - Descrição completa
+- category (VARCHAR) - Categoria (água, energia, etc.)
+- difficulty (VARCHAR) - Nível de dificuldade
+- impact (VARCHAR) - Impacto ambiental
+- implemented (BOOLEAN) - Usuário marcou como implementado?
 - user_id (UUID, FK) - Referencia tb_user_infos
-- title (TEXT) - Título da meta
-- description (TEXT) - Descrição
-- target (NUMERIC) - Meta a atingir
-- current (NUMERIC) - Progresso atual
-- deadline (DATE) - Data limite
-- completed (BOOLEAN) - Meta atingida?
-- created_at (TIMESTAMP)
 ```
 
 ## 🎮 Quiz Educativo (Game)
