@@ -3,15 +3,16 @@
 Aplicação web criada para ajudar famílias a acompanharem e reduzirem seu impacto ambiental, oferecendo um painel completo com consumo de recursos, metas sustentáveis, dicas personalizadas e um quiz educativo.
 
 ## Tecnologias
-
-- ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white) **React 18** com Vite 5  
-- ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white) **Vite 5**  
-- ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-2DD4BF?logo=tailwindcss&logoColor=white) **Tailwind CSS** para estilização  
-- ![React Router](https://img.shields.io/badge/React_Router_DOM-CA4245?logo=react-router&logoColor=white) **React Router DOM** para navegação  
-- ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?logo=react-query&logoColor=white) **TanStack Query** para gerenciamento de dados  
-- ![Framer Motion](https://img.shields.io/badge/Framer_Motion-EF008F?logo=framer&logoColor=white) **Framer Motion** e  
-  ![Lucide Icons](https://img.shields.io/badge/Lucide_Icons-000000?logo=lucide&logoColor=white) **Lucide Icons** para animações e ícones  
-- ![Recharts](https://img.shields.io/badge/Recharts-FF7300?logo=recharts&logoColor=white) **Recharts** para visualização gráfica
+| Badge | Nome | Finalidade  |
+|------------------------------------------|-------------|-------------|
+| ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white) | **React 18**   | Criação da interface do usuário  |  |
+| ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white) | **Vite 5**  | Ferramenta de build e desenvolvimento  |  |
+| ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-2DD4BF?logo=tailwindcss&logoColor=white) | **Tailwind CSS**  | Estilização rápida e responsiva  |  |
+| ![React Router](https://img.shields.io/badge/React_Router_DOM-CA4245?logo=react-router&logoColor=white) | **React Router DOM** | Navegação entre páginas  |  |
+| ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?logo=react-query&logoColor=white) | **TanStack Query**  | Gerenciamento de estado e cache  |  |
+| ![Framer Motion](https://img.shields.io/badge/Framer_Motion-EF008F?logo=framer&logoColor=white) | **Framer Motion**  | Animações fluidas e interativas  |  |
+| ![Lucide Icons](https://img.shields.io/badge/Lucide_Icons-000000?logo=lucide&logoColor=white) | **Lucide Icons**  | Ícones personalizáveis e animados  |  |
+| ![Recharts](https://img.shields.io/badge/Recharts-FF7300?logo=recharts&logoColor=white) | **Recharts**  | Gráficos e visualizações de dados  |  |
 
 ## Pré-requisitos
 
