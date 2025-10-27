@@ -75,9 +75,9 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
    npm install
    ```
 
-````
+
 2. Inicie o servidor de desenvolvimento:
-   ```bash
+```bash
    npm run dev
 ````
 
