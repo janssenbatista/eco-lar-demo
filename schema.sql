@@ -10,7 +10,7 @@ create table public.tb_tips (
   implemented boolean not null default false,
   user_id uuid not null,
   constraint tb_tips_pkey primary key (id),
-  constraint tb_tips_user_id_fkey foreign KEY (user_id) references auth.users (id)
+  constraint tb_tips_user_id_fkey foreign KEY (user_id) references auth.users (id) on update CASCADE on delete CASCADE
 ) TABLESPACE pg_default;
 
 create table public.tb_user_infos (
@@ -28,7 +28,7 @@ create table public.tb_user_infos (
   onboarding_completed boolean not null default false,
   score integer null,
   constraint tb_user_infos_pkey primary key (user_id),
-  constraint tb_user_infos_id_fkey foreign KEY (user_id) references auth.users (id)
+  constraint tb_user_infos_id_fkey foreign KEY (user_id) references auth.users (id) on update CASCADE on delete CASCADE
 ) TABLESPACE pg_default;
 
 create table public.tb_consumption_records (
@@ -41,6 +41,68 @@ create table public.tb_consumption_records (
   constraint tb_consumption_records_pkey primary key (id),
   constraint tb_consumption_records_user_id_fkey foreign KEY (user_id) references auth.users (id) on update CASCADE on delete CASCADE
 ) TABLESPACE pg_default;
+
+-- POLICIES
+
+ALTER TABLE "public"."tb_tips" ENABLE ROW LEVEL SECURITY
+
+create policy "Enable users to view their own data only"
+  on "public"."tb_tips"
+  for select
+  to authenticated
+  using (
+    (select auth.uid()) = user_id
+);
+
+create policy "users can update you own data"
+  on "public"."tb_tips"
+  to public
+  using (
+    (auth.uid() = user_id)
+  ) with check (
+    (auth.uid() = user_id)
+);
+
+ALTER TABLE "public"."tb_consumption_records" ENABLE ROW LEVEL SECURITY
+
+create policy "Enable users to view their own data only"
+  on "public"."tb_consumption_records"
+  for select
+  to authenticated
+  using (
+    (select auth.uid()) = user_id
+);
+
+create policy "Enable insert for users based on user_id"
+  on "public"."tb_consumption_records"
+  for insert with check (
+    (select auth.uid()) = user_id
+);
+
+create policy "Enable delete for users based on user_id"
+  on "public"."tb_consumption_records"
+  for delete using (
+    (select auth.uid()) = user_id
+);
+
+ALTER TABLE "public"."tb_user_infos" ENABLE ROW LEVEL SECURITY
+
+create policy "Enable users to view their own data only"
+  on "public"."tb_user_infos"
+  for select
+  to authenticated
+  using (
+    (select auth.uid()) = user_id
+);
+
+create policy "users can update you own data"
+  on "public"."tb_user_infos"
+  to public
+  using (
+    (auth.uid() = user_id)
+  ) with check (
+    (auth.uid() = user_id)
+);
 
 -- FUNCTIONS
 
