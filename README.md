@@ -1,6 +1,8 @@
 # <img src="./public/leaf-icon.svg" alt="Leaf Icon" width="32" style="vertical-align:middle; margin-right:8px;"> EcoLar
-![EcoLar](./public/ecolar.png)
+![EcoLar](./public/ecolar.jpg)
 Aplicação web criada para ajudar famílias a acompanharem e reduzirem seu impacto ambiental, oferecendo um painel completo com consumo de recursos, metas sustentáveis, dicas personalizadas e um quiz educativo.
+
+
 
 ## Tecnologias
 | Badge | Nome | Finalidade  |
