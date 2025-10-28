@@ -1,5 +1,10 @@
 # <img src="./public/leaf-icon.svg" alt="Leaf Icon" width="32" style="vertical-align:middle; margin-right:8px;"> EcoLar
+<<<<<<< HEAD
 ![EcoLar](./public/ecolar.jpg)
+=======
+
+![EcoLar](./public/ecolar.png)
+>>>>>>> c7001c8d2728a8aaafeeee2d96c0a5dbfa73d8a3
 Aplicação web criada para ajudar famílias a acompanharem e reduzirem seu impacto ambiental, oferecendo um painel completo com consumo de recursos, metas sustentáveis, dicas personalizadas e um quiz educativo.
 
 
@@ -144,7 +149,6 @@ Essas rotas redirecionam para `/login` se o usuário não estiver autenticado:
 - ✅ `/onboarding` - Formulário de personalização (4 passos)
 - ✅ `/dashboard` - Painel principal com estatísticas
 - ✅ `/add-record` - Registrar consumo de recursos
-- ✅ `/goals` - Metas sustentáveis
 - ✅ `/tips` - Dicas personalizadas
 - ✅ `/calculator` - Calculadora de pegada de carbono
 - ✅ `/game` - Quiz educativo com 50 perguntas
@@ -161,6 +165,7 @@ Essas rotas são acessíveis sem autenticação:
 ### Componentes Principais
 
 #### `AuthContext.jsx`
+
 Gerencia o estado de autenticação da aplicação:
 
 ```jsx
@@ -172,6 +177,7 @@ const { currentUser, loading, logout } = useAuth();
 ```
 
 #### `ProtectedRoute.jsx`
+
 Componente que envolve rotas protegidas:
 
 ```jsx
@@ -187,25 +193,25 @@ Componente que envolve rotas protegidas:
 
 ## 📍 Rotas Disponíveis
 
-| Rota | Autenticação | Descrição |
-|------|--------------|-----------|
-| `/` | ❌ | Redireciona para `/intro` |
-| `/intro` | ❌ | Vídeo motivacional com slides |
-| `/login` | ❌ | Login/Signup com Supabase Auth |
-| `/onboarding` | ✅ | Formulário 4 passos (casa, transporte, energia, hábitos) |
-| `/dashboard` | ✅ | Painel com stats, gráficos e atividade recente |
-| `/add-record` | ✅ | Registrar consumo de água, energia, etc. |
-| `/goals` | ✅ | Criar e acompanhar metas sustentáveis |
-| `/tips` | ✅ | Dicas personalizadas baseadas no perfil |
-| `/calculator` | ✅ | Cálculo de emissão de CO₂ |
-| `/game` | ✅ | Quiz com 10 perguntas sorteadas de 50 |
-| `/profile` | ✅ | Editar dados do usuário |
+| Rota          | Autenticação | Descrição                                                |
+| ------------- | ------------ | -------------------------------------------------------- |
+| `/`           | ❌           | Redireciona para `/intro`                                |
+| `/intro`      | ❌           | Vídeo motivacional com slides                            |
+| `/login`      | ❌           | Login/Signup com Supabase Auth                           |
+| `/onboarding` | ✅           | Formulário 4 passos (casa, transporte, energia, hábitos) |
+| `/dashboard`  | ✅           | Painel com stats, gráficos e atividade recente           |
+| `/add-record` | ✅           | Registrar consumo de água, energia, etc.                 |
+| `/tips`       | ✅           | Dicas personalizadas baseadas no perfil                  |
+| `/calculator` | ✅           | Cálculo de emissão de CO₂                                |
+| `/game`       | ✅           | Quiz com 10 perguntas sorteadas de 50                    |
+| `/profile`    | ✅           | Editar dados do usuário                                  |
 
 ## 📊 Banco de Dados (Supabase)
 
 ### Tabelas Principais
 
 #### `tb_user_infos`
+
 Armazena informações do usuário e status do onboarding:
 
 ```
@@ -224,6 +230,7 @@ Armazena informações do usuário e status do onboarding:
 ```
 
 #### `tb_consumption_records`
+
 Registros de consumo de recursos:
 
 ```
@@ -236,6 +243,7 @@ Registros de consumo de recursos:
 ```
 
 #### `tb_tips`
+
 Dicas e conselhos sustentáveis:
 
 ```
@@ -292,8 +300,8 @@ npm run preview
 
 ```sql
 -- Exemplo de política para permitir leitura/escrita própria
-CREATE POLICY "Users can read own data" 
-ON tb_user_infos FOR SELECT 
+CREATE POLICY "Users can read own data"
+ON tb_user_infos FOR SELECT
 USING (auth.uid() = user_id);
 ```
 
@@ -316,14 +324,14 @@ USING (auth.uid() = user_id);
 3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
-## 👨‍💻 Desenvolvedores
 
+## 👨‍💻 Desenvolvedores
 
 - [Júnior Medeiros](https://github.com/Medeiros000)
 - [Janssen Batista ](https://github.com/janssenbatista)
 
-
 Sinta-se à vontade para entrar em contato via GitHub para dúvidas, sugestões ou colaborações!
+
 ## 📝 Licença
 
 Este projeto é de código aberto e está disponível sob a MIT License.
