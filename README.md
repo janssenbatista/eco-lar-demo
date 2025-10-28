@@ -328,8 +328,11 @@ USING (auth.uid() = user_id);
 
 ## 👨‍💻 Desenvolvedores
 
-- [Júnior Medeiros](https://github.com/Medeiros000)
-- [Janssen Batista ](https://github.com/janssenbatista)
+- [Linconl Augusto](https://github.com/LinconlBR) - UI/UX Designer, Prototipador
+- [Júnior Medeiros](https://github.com/Medeiros000) - Full Stack
+- [Janssen Batista ](https://github.com/janssenbatista) - Full Stack
+- [Natã Bracho](https://github.com/NatBaracho) - Contribuidor
+- [Carlos Augusto](https://github.com/SolracOtsugua) - Contribuidor
 
 Sinta-se à vontade para entrar em contato via GitHub para dúvidas, sugestões ou colaborações!
 
