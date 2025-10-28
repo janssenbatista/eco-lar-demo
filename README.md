@@ -1,10 +1,11 @@
-# <img src="./public/leaf-icon.svg" alt="Leaf Icon" width="32" style="vertical-align:middle; margin-right:8px;"> EcoLar
-<<<<<<< HEAD
-![EcoLar](./public/ecolar.jpg)
-=======
+# <img width="32" height="32" alt="leaf-icon" src="https://github.com/user-attachments/assets/b02a21d6-e83e-44f2-a795-8836bb09226c" />  EcoLar
 
-![EcoLar](./public/ecolar.png)
->>>>>>> c7001c8d2728a8aaafeeee2d96c0a5dbfa73d8a3
+
+![EcoLar](https://github.com/user-attachments/assets/ac5e9744-9452-4cf1-9a45-92bda58dc3fc)
+
+
+
+
 Aplicação web criada para ajudar famílias a acompanharem e reduzirem seu impacto ambiental, oferecendo um painel completo com consumo de recursos, metas sustentáveis, dicas personalizadas e um quiz educativo.
 
 
