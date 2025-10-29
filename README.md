@@ -151,7 +151,6 @@ Essas rotas redirecionam para `/login` se o usuário não estiver autenticado:
 - ✅ `/dashboard` - Painel principal com estatísticas
 - ✅ `/add-record` - Registrar consumo de recursos
 - ✅ `/tips` - Dicas personalizadas
-- ✅ `/calculator` - Calculadora de pegada de carbono
 - ✅ `/game` - Quiz educativo com 50 perguntas
 - ✅ `/profile` - Perfil e configurações do usuário
 
@@ -203,7 +202,6 @@ Componente que envolve rotas protegidas:
 | `/dashboard`  | ✅           | Painel com stats, gráficos e atividade recente           |
 | `/add-record` | ✅           | Registrar consumo de água, energia, etc.                 |
 | `/tips`       | ✅           | Dicas personalizadas baseadas no perfil                  |
-| `/calculator` | ✅           | Cálculo de emissão de CO₂                                |
 | `/game`       | ✅           | Quiz com 10 perguntas sorteadas de 50                    |
 | `/profile`    | ✅           | Editar dados do usuário                                  |
 

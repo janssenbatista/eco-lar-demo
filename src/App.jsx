@@ -43,7 +43,7 @@ export default function App() {
         <Route path={createPageUrl("AddRecord")} element={<AddRecord />} />
         <Route path={createPageUrl("Goals")} element={<Goals />} />
         <Route path={createPageUrl("Tips")} element={<Tips />} />
-        <Route path={createPageUrl("Calculator")} element={<Calculator />} />
+        {/* <Route path={createPageUrl("Calculator")} element={<Calculator />} /> */}
         <Route path={createPageUrl("Game")} element={<Game />} />
         <Route path={createPageUrl("Profile")} element={<Profile />} />
       </Route>

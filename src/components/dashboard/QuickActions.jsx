@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Link } from "react-router-dom";
-import { Plus, Target, Lightbulb, Calculator } from "lucide-react";
+import { BrainCircuit, Plus, Target, Lightbulb, Calculator, User } from "lucide-react";
 import { createPageUrl } from "@/utils";
 
 const actions = [
@@ -18,11 +18,23 @@ const actions = [
     color: "#f59e0b",
     link: createPageUrl("Tips"),
   },
+  // {
+  //   title: "Calcular CO₂",
+  //   icon: Calculator,
+  //   color: "#a855f7",
+  //   link: createPageUrl("Calculator"),
+  // },
   {
-    title: "Calcular CO₂",
-    icon: Calculator,
+    title: "Game",
+    icon: BrainCircuit,
+    color: "#10b981",
+    link: createPageUrl("Game"),
+  },
+  {
+    title: "Perfil",
+    icon: User,
     color: "#a855f7",
-    link: createPageUrl("Calculator"),
+    link: createPageUrl("Profile"),
   },
 ];
 

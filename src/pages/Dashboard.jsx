@@ -115,7 +115,7 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <RecentActivity records={records} isLoading={recordsLoading} />
+          {/* <RecentActivity records={records} isLoading={recordsLoading} /> */}
         </div>
       </div>
     </div>

@@ -39,7 +39,7 @@ const navigationItems = [
   },
   { title: "Registrar consumo", url: createPageUrl("AddRecord"), icon: Plus },
   { title: "Dicas", url: createPageUrl("Tips"), icon: Lightbulb },
-  { title: "Calculadora", url: createPageUrl("Calculator"), icon: Calculator },
+  // { title: "Calculadora", url: createPageUrl("Calculator"), icon: Calculator },
   { title: "Game", url: createPageUrl("Game"), icon: BrainCircuit },
   { title: "Perfil", url: createPageUrl("Profile"), icon: User },
 ];
