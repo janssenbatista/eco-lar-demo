@@ -25,7 +25,7 @@ export default function PersonalizedInsights({ user, stats }) {
   const energyPerPerson = Number(stats.energyPerPerson || 0);
 
   if (waterPerPerson) {
-    const average = 5;
+    const average = 150;
     insights.push(
       waterPerPerson < average
         ? {
