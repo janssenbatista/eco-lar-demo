@@ -1,9 +1,8 @@
 # <img width="32" height="32" alt="leaf-icon" src="https://github.com/user-attachments/assets/b02a21d6-e83e-44f2-a795-8836bb09226c" />  EcoLar
+### Vencedor da 2ª edição Hackathon Comunidade LAB 365 
+[eco-lar-demo.vercel.app/](https://eco-lar-demo.vercel.app/)
 
-
-![EcoLar](https://github.com/user-attachments/assets/ac5e9744-9452-4cf1-9a45-92bda58dc3fc)
-
-
+![hackathon_fita_1](https://github.com/user-attachments/assets/55f2cd6c-daa0-4d99-82a3-bbceb2d999fe)
 
 
 Aplicação web criada para ajudar famílias a acompanharem e reduzirem seu impacto ambiental, oferecendo um painel completo com consumo de recursos, metas sustentáveis, dicas personalizadas e um quiz educativo.
